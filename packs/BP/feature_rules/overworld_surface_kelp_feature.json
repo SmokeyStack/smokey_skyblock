@@ -1,0 +1,27 @@
+{
+    "format_version": "1.13.0",
+    "minecraft:feature_rules": {
+        "description": {
+            "identifier": "minecraft:overworld_surface_kelp_feature",
+            "places_feature": "minecraft:kelp_feature"
+        },
+        "conditions": {
+            "placement_pass": "surface_pass",
+            "minecraft:biome_filter": {
+                "test": "has_biome_tag",
+                "operator": "==",
+                "value": "smokey"
+            }
+        },
+        "distribution": {
+            "iterations": 0,
+            "scatter_chance": {
+                "numerator": 1,
+                "denominator": 18
+            },
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    }
+}
