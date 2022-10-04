@@ -1,0 +1,21 @@
+{
+    "author": "SmokeyStack",
+    "name": "smokey_skyblock",
+    "packs": {
+        "behaviorPack": "./packs/BP",
+        "resourcePack": "./packs/RP"
+    },
+    "regolith": {
+        "dataPath": "./packs/data",
+        "filterDefinitions": {},
+        "profiles": {
+            "default": {
+                "export": {
+                    "readOnly": false,
+                    "target": "development"
+                },
+                "filters": []
+            }
+        }
+    }
+}
