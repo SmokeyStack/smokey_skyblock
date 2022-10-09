@@ -1,0 +1,49 @@
+{
+    "format_version": 2,
+    "header": {
+        "name": "Smokey Skyblock",
+        "description": "Made By SmokeyStack",
+        "uuid": "5b015c1a-5cb1-429a-9cee-7cdcb55423ae",
+        "version": [
+            1,
+            0,
+            0
+        ],
+        "min_engine_version": [
+            1,
+            19,
+            0
+        ]
+    },
+    "modules": [
+        {
+            "type": "data",
+            "uuid": "0c399261-3fcc-46f1-bb6e-6c8e77ca0d20",
+            "version": [
+                1,
+                0,
+                0
+            ]
+        },
+        {
+            "type": "script",
+            "entry": "scripts/index.js",
+            "uuid": "b2ad5687-f337-4db0-92fe-cd7530186dd9",
+            "version": [
+                1,
+                0,
+                0
+            ]
+        }
+    ],
+    "dependencies": [
+        {
+            "uuid": "b26a4d4c-afdf-4690-88f8-931846312678",
+            "version": [
+                0,
+                1,
+                0
+            ]
+        }
+    ]
+}
