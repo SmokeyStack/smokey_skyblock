@@ -2,11 +2,11 @@
     "format_version": "1.13.0",
     "minecraft:feature_rules": {
         "description": {
-            "identifier": "smokey_space:air_replacement",
-            "places_feature": "smokey_space:air_grid"
+            "identifier": "smokey_skyblock:air_replacement",
+            "places_feature": "smokey_skyblock:air_grid"
         },
         "conditions": {
-            "placement_pass": "first_pass",
+            "placement_pass": "final_pass",
             "minecraft:biome_filter": [
                 {
                     "any_of": [

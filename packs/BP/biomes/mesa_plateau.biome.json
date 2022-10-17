@@ -1,0 +1,49 @@
+{
+    "format_version": "1.13.0",
+    "minecraft:biome": {
+        "description": {
+            "identifier": "mesa_plateau"
+        },
+        "components": {
+            "minecraft:climate": {
+                "downfall": 0.0,
+                "snow_accumulation": [
+                    0.0,
+                    0.125
+                ],
+                "temperature": 2.0
+            },
+            "minecraft:mesa_surface": {
+                "bryce_pillars": false,
+                "clay_material": "minecraft:air",
+                "sea_floor_depth": 7,
+                "sea_floor_material": "minecraft:air",
+                "foundation_material": "minecraft:air",
+                "hard_clay_material": "minecraft:air",
+                "has_forest": false,
+                "mid_material": "minecraft:air",
+                "top_material": "minecraft:air",
+                "sea_material": "minecraft:air"
+            },
+            "minecraft:overworld_height": {
+                "noise_type": "highlands"
+            },
+            "minecraft:overworld_generation_rules": {
+                "hills_transformation": "mesa",
+                "mutate_transformation": "mesa_plateau_mutated",
+                "generate_for_climates": [
+                    [
+                        "warm",
+                        1
+                    ]
+                ]
+            },
+            "mesa": {},
+            "monster": {},
+            "overworld": {},
+            "plateau": {},
+            "rare": {},
+            "minecraft:ignore_automatic_features": {}
+        }
+    }
+}

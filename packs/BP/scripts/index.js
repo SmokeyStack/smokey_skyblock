@@ -1,21 +1,14 @@
-import { world } from "mojang-minecraft";
+import { world } from "@minecraft/server";
 
 let currentTick = 0;
+let hasRan = false;
 
-function begin() {
+world.events.tick.subscribe(async () => {
     currentTick++;
-    if (currentTick % 200 == 0) {
-        try {
-            world.getDimension("overworld").runCommand("summon wither 0 128 0");
-            world.events.tick.unsubscribe(begin);
-        } catch (error) {
-            console.error("Error is: " + error);
-        }
+    if (!hasRan && (currentTick % 20 == 0)) {
+        await world.getDimension("overworld").runCommandAsync("fill -3 63 -3 3 63 3 grass 0 replace air");
+        await world.getDimension("overworld").runCommandAsync("setworldspawn 0 64 0");
+        await world.getDimension("overworld").runCommandAsync("setblock 0 64 0 sapling");
+        hasRan = true;
     }
-}
-
-function test() {
-    world.events.tick.subscribe(begin);
-}
-
-world.events.worldInitialize.subscribe(test);
+});

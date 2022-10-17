@@ -7,14 +7,16 @@
         },
         "conditions": {
             "placement_pass": "after_surface_pass",
-            "minecraft:biome_filter": {
-                "test": "has_biome_tag",
-                "operator": "==",
-                "value": "smokey"
-            }
+            "minecraft:biome_filter": [
+                {
+                    "test": "has_biome_tag",
+                    "operator": "==",
+                    "value": "smokey"
+                }
+            ]
         },
         "distribution": {
-            "iterations": 1,
+            "iterations": 0,
             "x": 0,
             "y": 0,
             "z": 0

@@ -1,0 +1,37 @@
+{
+    "format_version": "1.13.0",
+    "minecraft:biome": {
+        "description": {
+            "identifier": "stony_peaks"
+        },
+        "components": {
+            "minecraft:climate": {
+                "downfall": 0.3,
+                "temperature": 1.0
+            },
+            "minecraft:mountain_parameters": {
+                "peaks_factor": 1,
+                "steep_material_adjustment": {
+                    "material": "minecraft:air",
+                    "north_slopes": true,
+                    "east_slopes": true
+                },
+                "top_slide": {
+                    "enabled": false
+                }
+            },
+            "minecraft:surface_parameters": {
+                "sea_floor_depth": 64,
+                "sea_floor_material": "minecraft:air",
+                "foundation_material": "minecraft:air",
+                "mid_material": "minecraft:air",
+                "top_material": "minecraft:air",
+                "sea_material": "minecraft:air"
+            },
+            "mountains": {},
+            "monster": {},
+            "overworld": {},
+            "minecraft:ignore_automatic_features": {}
+        }
+    }
+}

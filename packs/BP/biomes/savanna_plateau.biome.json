@@ -1,0 +1,38 @@
+{
+    "format_version": "1.13.0",
+    "minecraft:biome": {
+        "description": {
+            "identifier": "savanna_plateau"
+        },
+        "components": {
+            "minecraft:climate": {
+                "downfall": 0.0,
+                "snow_accumulation": [
+                    0.0,
+                    0.125
+                ],
+                "temperature": 1.0
+            },
+            "minecraft:overworld_height": {
+                "noise_type": "highlands"
+            },
+            "minecraft:surface_parameters": {
+                "sea_floor_depth": 64,
+                "sea_floor_material": "minecraft:air",
+                "foundation_material": "minecraft:air",
+                "mid_material": "minecraft:air",
+                "top_material": "minecraft:air",
+                "sea_material": "minecraft:air"
+            },
+            "minecraft:overworld_generation_rules": {
+                "mutate_transformation": "savanna_plateau_mutated"
+            },
+            "animal": {},
+            "monster": {},
+            "overworld": {},
+            "plateau": {},
+            "savanna": {},
+            "minecraft:ignore_automatic_features": {}
+        }
+    }
+}

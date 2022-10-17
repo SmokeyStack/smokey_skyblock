@@ -7,11 +7,13 @@
         },
         "conditions": {
             "placement_pass": "surface_pass",
-            "minecraft:biome_filter": {
-                "test": "has_biome_tag",
-                "operator": "==",
-                "value": "smokey"
-            }
+            "minecraft:biome_filter": [
+                {
+                    "test": "has_biome_tag",
+                    "operator": "==",
+                    "value": "smokey"
+                }
+            ]
         },
         "distribution": {
             "iterations": 20,
@@ -19,6 +21,7 @@
                 "numerator": 1,
                 "denominator": 18
             },
+            "coordinate_eval_order": "zxy",
             "x": {
                 "distribution": "uniform",
                 "extent": [
@@ -26,7 +29,7 @@
                     35
                 ]
             },
-            "y": 43,
+            "y": "query.heightmap(variable.worldx, variable.worldz)",
             "z": {
                 "distribution": "uniform",
                 "extent": [

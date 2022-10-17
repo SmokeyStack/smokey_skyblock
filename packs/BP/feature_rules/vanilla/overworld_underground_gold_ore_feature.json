@@ -7,14 +7,16 @@
         },
         "conditions": {
             "placement_pass": "underground_pass",
-            "minecraft:biome_filter": {
-                "test": "has_biome_tag",
-                "operator": "==",
-                "value": "smokey"
-            }
+            "minecraft:biome_filter": [
+                {
+                    "test": "has_biome_tag",
+                    "operator": "==",
+                    "value": "smokey"
+                }
+            ]
         },
         "distribution": {
-            "iterations": 2,
+            "iterations": 4,
             "coordinate_eval_order": "zyx",
             "x": {
                 "distribution": "uniform",
@@ -24,9 +26,9 @@
                 ]
             },
             "y": {
-                "distribution": "uniform",
+                "distribution": "triangle",
                 "extent": [
-                    0,
+                    -64,
                     32
                 ]
             },

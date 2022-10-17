@@ -1,0 +1,47 @@
+{
+    "format_version": "1.13.0",
+    "minecraft:biome": {
+        "description": {
+            "identifier": "mega_taiga"
+        },
+        "components": {
+            "minecraft:climate": {
+                "downfall": 0.8,
+                "snow_accumulation": [
+                    0.0,
+                    0.125
+                ],
+                "temperature": 0.3
+            },
+            "minecraft:overworld_height": {
+                "noise_type": "taiga"
+            },
+            "minecraft:surface_parameters": {
+                "sea_floor_depth": 64,
+                "sea_floor_material": "minecraft:air",
+                "foundation_material": "minecraft:air",
+                "mid_material": "minecraft:air",
+                "top_material": "minecraft:air",
+                "sea_material": "minecraft:air"
+            },
+            "minecraft:overworld_generation_rules": {
+                "hills_transformation": "mega_taiga_hills",
+                "mutate_transformation": "redwood_taiga_mutated",
+                "generate_for_climates": [
+                    [
+                        "cold",
+                        1
+                    ]
+                ]
+            },
+            "animal": {},
+            "forest": {},
+            "mega": {},
+            "monster": {},
+            "overworld": {},
+            "rare": {},
+            "taiga": {},
+            "minecraft:ignore_automatic_features": {}
+        }
+    }
+}

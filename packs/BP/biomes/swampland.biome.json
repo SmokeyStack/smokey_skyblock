@@ -1,0 +1,43 @@
+{
+    "format_version": "1.13.0",
+    "minecraft:biome": {
+        "description": {
+            "identifier": "swampland"
+        },
+        "components": {
+            "minecraft:climate": {
+                "downfall": 0.5,
+                "snow_accumulation": [
+                    0.0,
+                    0.125
+                ],
+                "temperature": 0.8
+            },
+            "minecraft:overworld_height": {
+                "noise_type": "swamp"
+            },
+            "minecraft:swamp_surface": {
+                "sea_floor_depth": 64,
+                "sea_floor_material": "minecraft:air",
+                "foundation_material": "minecraft:air",
+                "mid_material": "minecraft:air",
+                "top_material": "minecraft:air",
+                "sea_material": "minecraft:air"
+            },
+            "minecraft:overworld_generation_rules": {
+                "mutate_transformation": "swampland_mutated",
+                "generate_for_climates": [
+                    [
+                        "medium",
+                        1
+                    ]
+                ]
+            },
+            "animal": {},
+            "monster": {},
+            "overworld": {},
+            "swamp": {},
+            "minecraft:ignore_automatic_features": {}
+        }
+    }
+}
