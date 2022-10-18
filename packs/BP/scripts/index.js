@@ -38,7 +38,7 @@ function detectCoalToDiamond(eventData) {
 }
 
 function detectCoral(eventData) {
-    if (eventData.currentTick % 20 == 0)
+    if (eventData.currentTick % 200 == 0)
         for (let player of world.getDimension("overworld").getPlayers(query)) {
             let blockLookedAt = player.getBlockFromViewVector({ maxDistance: 8 });
 
