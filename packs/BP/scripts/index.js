@@ -12,6 +12,19 @@ world.events.tick.subscribe(async () => {
     }
 });
 
+world.events.beforeItemUseOn.subscribe(async (eventData) => {
+    let block = world.getDimension("overworld").getBlock(eventData.blockLocation);
+    if (eventData.item.typeId == "minecraft:potion" && eventData.item.data == 3 && block.typeId == "minecraft:stone") {
+        block.setType(MinecraftBlockTypes.deepslate);
+        clearPotion(eventData.source);
+        await eventData.source.runCommandAsync("give @s minecraft:glass_bottle");
+    }
+});
+
+async function clearPotion(player) {
+    await player.runCommandAsync("clear @s potion 3 1");
+}
+
 function escapeVoid() {
     let players = world.getDimension("overworld").getPlayers(query);
 
@@ -48,7 +61,7 @@ function detectCoral(eventData) {
                 else if (blockLookedAt.isWaterlogged && (detectFlowingWater(blockLookedAt, 'n') || detectFlowingWater(blockLookedAt, 'e') || detectFlowingWater(blockLookedAt, 's') || detectFlowingWater(blockLookedAt, 'w')))
                     world.getDimension("overworld").spawnItem(new ItemStack(MinecraftItemTypes.sand), blockLookedAt.location);
 
-                if (Math.round(Math.random() * 100) % 3 == 0)
+                if (Math.round(Math.random() * 100) % 4 == 0)
                     blockLookedAt.setType(MinecraftBlockTypes.air);
             }
         }
@@ -74,4 +87,5 @@ function detectFlowingWater(block, dir) {
 
 world.events.tick.subscribe(detectCoral);
 world.events.tick.subscribe(escapeVoid);
+
 world.events.beforePistonActivate.subscribe(detectCoalToDiamond);
