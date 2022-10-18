@@ -1,4 +1,4 @@
-import { ItemStack, Location, MinecraftBlockTypes, MinecraftItemTypes, world } from "@minecraft/server";
+import { BlockLocation, BlockPermutation, ItemStack, Location, MinecraftBlockTypes, MinecraftItemTypes, world } from "@minecraft/server";
 
 let hasRan = false;
 let query = {};
@@ -85,7 +85,26 @@ function detectFlowingWater(block, dir) {
     }
 }
 
+function detectGoat(eventData) {
+    if (world.getDimension("overworld").getBlock(new BlockLocation(Math.floor(eventData.entity.location.x), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z - 1))).typeId == "minecraft:vine")
+        setLichen(Math.floor(eventData.entity.location.x), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z - 1), 4);
+
+    if (world.getDimension("overworld").getBlock(new BlockLocation(Math.floor(eventData.entity.location.x + 1), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z))).typeId == "minecraft:vine")
+        setLichen(Math.floor(eventData.entity.location.x + 1), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z), 8);
+
+    if (world.getDimension("overworld").getBlock(new BlockLocation(Math.floor(eventData.entity.location.x), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z + 1))).typeId == "minecraft:vine")
+        setLichen(Math.floor(eventData.entity.location.x), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z + 1), 16);
+
+    if (world.getDimension("overworld").getBlock(new BlockLocation(Math.floor(eventData.entity.location.x - 1), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z))).typeId == "minecraft:vine")
+        setLichen(Math.floor(eventData.entity.location.x - 1), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z), 32);
+}
+
+async function setLichen(x, y, z, bit) {
+    await world.getDimension("overworld").runCommandAsync(`setblock ${x} ${y} ${z} glow_lichen [\"multi_face_direction_bits\": ${bit}]`);
+}
+
 world.events.tick.subscribe(detectCoral);
 world.events.tick.subscribe(escapeVoid);
 
 world.events.beforePistonActivate.subscribe(detectCoalToDiamond);
+world.events.entityCreate.subscribe(detectGoat);
