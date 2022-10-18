@@ -85,7 +85,7 @@ function detectFlowingWater(block, dir) {
     }
 }
 
-function detectGoat(eventData) {
+function detectVineToLichen(eventData) {
     if (world.getDimension("overworld").getBlock(new BlockLocation(Math.floor(eventData.entity.location.x), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z - 1))).typeId == "minecraft:vine")
         setLichen(Math.floor(eventData.entity.location.x), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z - 1), 4);
 
@@ -107,4 +107,4 @@ world.events.tick.subscribe(detectCoral);
 world.events.tick.subscribe(escapeVoid);
 
 world.events.beforePistonActivate.subscribe(detectCoalToDiamond);
-world.events.entityCreate.subscribe(detectGoat);
+world.events.entityCreate.subscribe(detectVineToLichen);
