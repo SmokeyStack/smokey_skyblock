@@ -1,7 +1,8 @@
-import { Location, world } from "@minecraft/server";
+import { ItemStack, Location, MinecraftItemTypes, world } from "@minecraft/server";
 
 let hasRan = false;
 let query = {};
+let currentTick = 0;
 
 world.events.tick.subscribe(async () => {
     if (!hasRan && (world.getAbsoluteTime() <= 2000)) {
@@ -23,4 +24,17 @@ function escapeVoid() {
 
 }
 
+function detectCoalToDiamond(eventData) {
+    let coal_location = eventData.block.location.offset(0, -1, 0);
+    let entities = world.getDimension("overworld").getEntitiesAtBlockLocation(coal_location);
+    for (let entity of entities)
+        if (entity.getComponent('minecraft:item').itemStack.typeId == "minecraft:coal" && entity.getComponent('minecraft:item').itemStack.amount == 64) {
+            entity.kill();
+            world.getDimension("overworld").spawnItem(new ItemStack(MinecraftItemTypes.diamond), coal_location);
+        }
+
+
+}
+
 world.events.tick.subscribe(escapeVoid);
+world.events.beforePistonActivate.subscribe(detectCoalToDiamond);
