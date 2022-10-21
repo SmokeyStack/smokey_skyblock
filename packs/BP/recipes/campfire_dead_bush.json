@@ -1,0 +1,14 @@
+{
+    "format_version": "1.12",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "smokey_skyblock:campfire_dead_bush"
+        },
+        "input": "minecraft:sapling",
+        "output": "minecraft:deadbush",
+        "tags": [
+            "campfire",
+            "soul_campfire"
+        ]
+    }
+}
