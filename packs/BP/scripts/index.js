@@ -103,8 +103,22 @@ async function setLichen(x, y, z, bit) {
     await world.getDimension("overworld").runCommandAsync(`setblock ${x} ${y} ${z} glow_lichen [\"multi_face_direction_bits\": ${bit}]`);
 }
 
+function dropEchoShard(eventData) {
+    if (eventData.cause != 'entityAttack' && (eventData.damagingEntity.typeId == "minecraft:warden") && (eventData.damage >= eventData.hurtEntity.getComponent("minecraft:health").current) && (eventData.hurtEntity.typeId == "minecraft:dolphin" || eventData.hurtEntity.typeId == "minecraft:bat"))
+        world.getDimension("overworld").spawnItem(new ItemStack(MinecraftItemTypes.echoShard), new BlockLocation(Math.floor(eventData.hurtEntity.location.x), Math.floor(eventData.hurtEntity.location.y + 1), Math.floor(eventData.hurtEntity.location.z)));
+
+}
+
+world.events.beforePistonActivate.subscribe(detectCoalToDiamond);
+
+world.events.entityCreate.subscribe(detectVineToLichen);
+
+world.events.entityHurt.subscribe(dropEchoShard);
+
 world.events.tick.subscribe(detectCoral);
 world.events.tick.subscribe(escapeVoid);
 
-world.events.beforePistonActivate.subscribe(detectCoalToDiamond);
-world.events.entityCreate.subscribe(detectVineToLichen);
+world.events.blockPlace.subscribe(async (eventData) => {
+    for (let tag of eventData.block.getTags())
+        eventData.player.runCommandAsync(`say ${tag}`)
+});
