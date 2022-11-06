@@ -1,0 +1,44 @@
+{
+    "pools": [
+        {
+            "entries": [
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 3,
+                                "min": 1
+                            },
+                            "function": "set_count"
+                        },
+                        {
+                            "count": {
+                                "max": 1,
+                                "min": 0
+                            },
+                            "function": "looting_enchant"
+                        }
+                    ],
+                    "name": "minecraft:rotten_flesh",
+                    "type": "item",
+                    "weight": 1
+                },
+                {
+                    "functions": [
+                        {
+                            "count": 1,
+                            "function": "set_count"
+                        },
+                        {
+                            "data": 6,
+                            "function": "set_data"
+                        }
+                    ],
+                    "name": "minecraft:banner_pattern",
+                    "type": "item"
+                }
+            ],
+            "rolls": 1
+        }
+    ]
+}

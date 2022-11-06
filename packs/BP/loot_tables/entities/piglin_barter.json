@@ -1,0 +1,258 @@
+{
+    "pools": [
+        {
+            "entries": [
+                {
+                    "functions": [
+                        {
+                            "enchants": [
+                                {
+                                    "id": "soul_speed",
+                                    "level": [
+                                        1,
+                                        3
+                                    ]
+                                }
+                            ],
+                            "function": "specific_enchants"
+                        }
+                    ],
+                    "name": "minecraft:book",
+                    "type": "item",
+                    "weight": 5
+                },
+                {
+                    "functions": [
+                        {
+                            "enchants": [
+                                {
+                                    "id": "soul_speed",
+                                    "level": [
+                                        1,
+                                        3
+                                    ]
+                                }
+                            ],
+                            "function": "specific_enchants"
+                        }
+                    ],
+                    "name": "minecraft:iron_boots",
+                    "type": "item",
+                    "weight": 8
+                },
+                {
+                    "functions": [
+                        {
+                            "data": 12,
+                            "function": "set_data"
+                        }
+                    ],
+                    "name": "minecraft:potion",
+                    "type": "item",
+                    "weight": 8
+                },
+                {
+                    "functions": [
+                        {
+                            "data": 12,
+                            "function": "set_data"
+                        }
+                    ],
+                    "name": "minecraft:splash_potion",
+                    "type": "item",
+                    "weight": 8
+                },
+                {
+                    "functions": [
+                        {
+                            "data": 0,
+                            "function": "set_data"
+                        }
+                    ],
+                    "name": "minecraft:potion",
+                    "type": "item",
+                    "weight": 10
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 36,
+                                "min": 10
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:iron_nugget",
+                    "type": "item",
+                    "weight": 10
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 4,
+                                "min": 2
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:ender_pearl",
+                    "type": "item",
+                    "weight": 10
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 9,
+                                "min": 3
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:string",
+                    "type": "item",
+                    "weight": 20
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 12,
+                                "min": 5
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:quartz",
+                    "type": "item",
+                    "weight": 20
+                },
+                {
+                    "name": "minecraft:obsidian",
+                    "type": "item",
+                    "weight": 40
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 3,
+                                "min": 1
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:crying_obsidian",
+                    "type": "item",
+                    "weight": 40
+                },
+                {
+                    "name": "minecraft:fireball",
+                    "type": "item",
+                    "weight": 40
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 4,
+                                "min": 2
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:leather",
+                    "type": "item",
+                    "weight": 40
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 8,
+                                "min": 2
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:soul_sand",
+                    "type": "item",
+                    "weight": 40
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 8,
+                                "min": 2
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:netherbrick",
+                    "type": "item",
+                    "weight": 40
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 12,
+                                "min": 6
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:arrow",
+                    "type": "item",
+                    "weight": 40
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 16,
+                                "min": 8
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:gravel",
+                    "type": "item",
+                    "weight": 40
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 16,
+                                "min": 8
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:blackstone",
+                    "type": "item",
+                    "weight": 40
+                },
+                {
+                    "functions": [
+                        {
+                            "count": {
+                                "max": 3,
+                                "min": 1
+                            },
+                            "function": "set_count"
+                        }
+                    ],
+                    "name": "minecraft:gilded_blackstone",
+                    "type": "item",
+                    "weight": 5
+                }
+            ],
+            "rolls": 1
+        }
+    ]
+}

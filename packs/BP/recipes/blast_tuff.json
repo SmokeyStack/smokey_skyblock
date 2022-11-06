@@ -1,0 +1,13 @@
+{
+    "format_version": "1.12",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "smokey_skyblock:blast_tuff"
+        },
+        "input": "minecraft:stone:5",
+        "output": "minecraft:tuff",
+        "tags": [
+            "blast_furnace"
+        ]
+    }
+}

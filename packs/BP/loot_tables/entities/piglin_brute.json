@@ -1,0 +1,30 @@
+{
+    "pools": [
+        {
+            "conditions": [
+                {
+                    "condition": "killed_by_player"
+                },
+                {
+                    "chance": 0.05,
+                    "condition": "random_chance_with_looting",
+                    "looting_multiplier": 0.02
+                }
+            ],
+            "entries": [
+                {
+                    "functions": [
+                        {
+                            "data": 1,
+                            "function": "set_data"
+                        }
+                    ],
+                    "name": "minecraft:ancient_debris",
+                    "type": "item",
+                    "weight": 1
+                }
+            ],
+            "rolls": 1
+        }
+    ]
+}

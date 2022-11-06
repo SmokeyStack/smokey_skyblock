@@ -1,0 +1,13 @@
+{
+    "format_version": "1.12",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "smokey_skyblock:blast_calcite"
+        },
+        "input": "minecraft:stone:3",
+        "output": "minecraft:calcite",
+        "tags": [
+            "blast_furnace"
+        ]
+    }
+}
