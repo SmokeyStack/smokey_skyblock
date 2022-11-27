@@ -1,16 +1,17 @@
 import { BlockLocation, BlockPermutation, ItemStack, Location, MinecraftBlockTypes, MinecraftItemTypes, world } from "@minecraft/server";
 
-let hasRan = false;
 let query = {};
 
-world.events.tick.subscribe(async () => {
-    if (!hasRan && (world.getAbsoluteTime() <= 2000)) {
-        await world.getDimension("overworld").runCommandAsync("fill -3 63 -3 3 63 3 grass 0 replace air");
-        await world.getDimension("overworld").runCommandAsync("setworldspawn 0 64 0");
-        await world.getDimension("overworld").runCommandAsync("fill 0 64 0 0 64 0 sapling 0 replace air");
-        hasRan = true;
-    }
-});
+async function setup() {
+    await world.getDimension("overworld").runCommandAsync("tickingarea add -16 63 -16 31 63 31 spawn true")
+        .then(world.getDimension("overworld").runCommandAsync("setworldspawn 0 64 0"))
+        .then(world.getDimension("overworld").runCommandAsync("tp @a 0 64 0"))
+        .then(world.getDimension("overworld").runCommandAsync("fill -3 63 -3 3 63 3 grass 0 replace air"))
+        .then(world.getDimension("overworld").runCommandAsync("fill 0 64 0 0 64 0 sapling 0 replace air"))
+        .then(world.events.tick.unsubscribe(setup));
+}
+
+world.events.tick.subscribe(setup);
 
 world.events.beforeItemUseOn.subscribe(async (eventData) => {
     let block = world.getDimension("overworld").getBlock(eventData.blockLocation);
@@ -34,7 +35,6 @@ function escapeVoid() {
             world.events.tick.unsubscribe(escapeVoid);
         }
     }
-
 }
 
 function detectCoalToDiamond(eventData) {
@@ -46,8 +46,6 @@ function detectCoalToDiamond(eventData) {
             entity.kill();
             world.getDimension("overworld").spawnItem(new ItemStack(MinecraftItemTypes.diamond), coal_location);
         }
-
-
 }
 
 function detectCoral(eventData) {
@@ -106,7 +104,6 @@ async function setLichen(x, y, z, bit) {
 function dropEchoShard(eventData) {
     if (eventData.cause != 'entityAttack' && (eventData.damagingEntity.typeId == "minecraft:warden") && (eventData.damage >= eventData.hurtEntity.getComponent("minecraft:health").current) && (eventData.hurtEntity.typeId == "minecraft:dolphin" || eventData.hurtEntity.typeId == "minecraft:bat"))
         world.getDimension("overworld").spawnItem(new ItemStack(MinecraftItemTypes.echoShard), new BlockLocation(Math.floor(eventData.hurtEntity.location.x), Math.floor(eventData.hurtEntity.location.y + 1), Math.floor(eventData.hurtEntity.location.z)));
-
 }
 
 world.events.beforePistonActivate.subscribe(detectCoalToDiamond);
@@ -119,6 +116,8 @@ world.events.tick.subscribe(detectCoral);
 world.events.tick.subscribe(escapeVoid);
 
 world.events.blockPlace.subscribe(async (eventData) => {
-    for (let tag of eventData.block.getTags())
-        eventData.player.runCommandAsync(`say ${tag}`)
+    if (eventData.block.typeId == "minecraft:sculk_shrieker" && world.getDimension("overworld").getBlock(eventData.block.location.offset(0, -1, 0)).typeId == "minecraft:soul_sand") {
+        eventData.player.runCommandAsync(`say ${eventData.block.typeId}`);
+        world.getDimension("overworld").runCommandAsync(`setblock ${eventData.block.location.x} ${eventData.block.location.y} ${eventData.block.location.z} sculk_shrieker [\"can_summon\": true]`);
+    }
 });
