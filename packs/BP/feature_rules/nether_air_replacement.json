@@ -1,0 +1,29 @@
+{
+    "format_version": "1.13.0",
+    "minecraft:feature_rules": {
+        "description": {
+            "identifier": "smokey_skyblock:nether_air_replacement",
+            "places_feature": "smokey_skyblock:air_grid"
+        },
+        "conditions": {
+            "placement_pass": "final_pass",
+            "minecraft:biome_filter": [
+                {
+                    "any_of": [
+                        {
+                            "test": "has_biome_tag",
+                            "operator": "==",
+                            "value": "nether"
+                        }
+                    ]
+                }
+            ]
+        },
+        "distribution": {
+            "iterations": 1,
+            "x": 0,
+            "z": 0,
+            "y": 0
+        }
+    }
+}
