@@ -4,10 +4,12 @@ let query = {};
 
 async function setup() {
     await world.getDimension("overworld").runCommandAsync("tickingarea add -16 63 -16 31 63 31 spawn true")
-        .then(world.getDimension("overworld").runCommandAsync("setworldspawn 0 64 0"))
-        .then(world.getDimension("overworld").runCommandAsync("tp @a 0 64 0"))
         .then(world.getDimension("overworld").runCommandAsync("fill -3 63 -3 3 63 3 grass 0 replace air"))
         .then(world.getDimension("overworld").runCommandAsync("fill 0 64 0 0 64 0 sapling 0 replace air"))
+        .then(world.getDimension("overworld").runCommandAsync("fill 2 63 0 2 63 0 crimson_nylium 0 replace grass"))
+        .then(world.getDimension("overworld").runCommandAsync("fill -2 63 0 -2 63 0 warped_nylium 0 replace grass"))
+        .then(world.getDimension("overworld").runCommandAsync("setworldspawn 0 64 0"))
+        .then(world.getDimension("overworld").runCommandAsync("tp @a 0 64 0"))
         .then(world.events.tick.unsubscribe(setup));
 }
 
