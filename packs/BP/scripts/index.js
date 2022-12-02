@@ -1,15 +1,15 @@
-import { BlockLocation, BlockPermutation, ItemStack, Location, MinecraftBlockTypes, MinecraftItemTypes, world } from "@minecraft/server";
+import { BlockLocation, ItemStack, Location, MinecraftBlockTypes, MinecraftItemTypes, world } from "@minecraft/server";
 
 let query = {};
 
 async function setup() {
     await world.getDimension("overworld").runCommandAsync("tickingarea add -16 63 -16 31 63 31 spawn true")
+        .then(world.getDimension("overworld").runCommandAsync("setworldspawn 0 64 0"))
+        .then(world.getDimension("overworld").runCommandAsync("tp @a 0 64 0"))
         .then(world.getDimension("overworld").runCommandAsync("fill -3 63 -3 3 63 3 grass 0 replace air"))
         .then(world.getDimension("overworld").runCommandAsync("fill 0 64 0 0 64 0 sapling 0 replace air"))
         .then(world.getDimension("overworld").runCommandAsync("fill 2 63 0 2 63 0 crimson_nylium 0 replace grass"))
         .then(world.getDimension("overworld").runCommandAsync("fill -2 63 0 -2 63 0 warped_nylium 0 replace grass"))
-        .then(world.getDimension("overworld").runCommandAsync("setworldspawn 0 64 0"))
-        .then(world.getDimension("overworld").runCommandAsync("tp @a 0 64 0"))
         .then(world.events.tick.unsubscribe(setup));
 }
 
@@ -18,15 +18,11 @@ world.events.tick.subscribe(setup);
 world.events.beforeItemUseOn.subscribe(async (eventData) => {
     let block = world.getDimension("overworld").getBlock(eventData.blockLocation);
     if (eventData.item.typeId == "minecraft:potion" && eventData.item.data == 3 && block.typeId == "minecraft:stone") {
+        eventData.cancel = true;
         block.setType(MinecraftBlockTypes.deepslate);
-        clearPotion(eventData.source);
-        await eventData.source.runCommandAsync("give @s minecraft:glass_bottle");
+        await eventData.source.runCommandAsync("clear @s potion 3 1").then(eventData.source.runCommandAsync("give @s minecraft:glass_bottle"));
     }
 });
-
-async function clearPotion(player) {
-    await player.runCommandAsync("clear @s potion 3 1");
-}
 
 function escapeVoid() {
     let players = world.getDimension("overworld").getPlayers(query);
