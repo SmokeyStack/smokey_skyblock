@@ -4,6 +4,9 @@ let query = {};
 
 const setupId = system.runSchedule(() => {
     world.getDimension('overworld').fillBlocks(new BlockLocation(-3, 63, -3), new BlockLocation(3, 63, 3), MinecraftBlockTypes.grass);
+    world.getDimension('overworld').fillBlocks(new BlockLocation(0, 64, 0), new BlockLocation(0, 64, 0), MinecraftBlockTypes.sapling);
+    world.getDimension('overworld').fillBlocks(new BlockLocation(-2, 63, 0), new BlockLocation(-2, 63, 0), MinecraftBlockTypes.crimsonNylium);
+    world.getDimension('overworld').fillBlocks(new BlockLocation(2, 63, 0), new BlockLocation(2, 63, 0), MinecraftBlockTypes.warpedNylium);
     let players = world.getDimension('overworld').getPlayers();
 
     for (let player of players) {
@@ -19,9 +22,6 @@ const setupId = system.runSchedule(() => {
 system.runSchedule(() => {
     system.clearRunSchedule(setupId);
 
-    world.getDimension('overworld').fillBlocks(new BlockLocation(0, 64, 0), new BlockLocation(0, 64, 0), MinecraftBlockTypes.sapling);
-    world.getDimension('overworld').fillBlocks(new BlockLocation(-2, 63, 0), new BlockLocation(-2, 63, 0), MinecraftBlockTypes.crimsonNylium);
-    world.getDimension('overworld').fillBlocks(new BlockLocation(2, 63, 0), new BlockLocation(2, 63, 0), MinecraftBlockTypes.warpedNylium);
     world.getDimension("overworld").runCommandAsync("setworldspawn 0 64 0");
 
     let players = world.getDimension('overworld').getPlayers();
