@@ -1,21 +1,37 @@
 {
-    "author": "SmokeyStack",
-    "name": "smokey_skyblock",
-    "packs": {
-        "behaviorPack": "./packs/BP",
-        "resourcePack": "./packs/RP"
-    },
-    "regolith": {
-        "dataPath": "./packs/data",
-        "filterDefinitions": {},
-        "profiles": {
-            "default": {
-                "export": {
-                    "readOnly": false,
-                    "target": "development"
-                },
-                "filters": []
-            }
-        }
-    }
+	"author": "SmokeyStack",
+	"name": "smokey_skyblock",
+	"packs": {
+		"behaviorPack": "./packs/BP",
+		"resourcePack": "./packs/RP"
+	},
+	"regolith": {
+		"dataPath": "./packs/data",
+		"filterDefinitions": {
+			"texture_list": {
+				"url": "github.com/Bedrock-OSS/regolith-filters",
+				"version": "1.1.2"
+			}
+		},
+		"profiles": {
+			"build": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
+					{
+						"filter": "texture_list"
+					}
+				]
+			},
+			"dev": {
+				"export": {
+					"readOnly": false,
+					"target": "development"
+				},
+				"filters": []
+			}
+		}
+	}
 }
