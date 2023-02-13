@@ -3,7 +3,7 @@
     "header": {
         "name": "Smokey's Skyblock",
         "description": "Made By SmokeyStack",
-        "uuid": "5b015c1a-5cb1-429a-9cee-7cdcb55423ae",
+        "uuid": "7c05474e-68f6-450e-816e-cb1be675dff6",
         "version": [
             1,
             0,
@@ -12,13 +12,13 @@
         "min_engine_version": [
             1,
             19,
-            0
+            60
         ]
     },
     "modules": [
         {
             "type": "data",
-            "uuid": "0c399261-3fcc-46f1-bb6e-6c8e77ca0d20",
+            "uuid": "ba2cc4b4-0ea4-4a3a-a28b-803b521c7c06",
             "version": [
                 1,
                 0,
