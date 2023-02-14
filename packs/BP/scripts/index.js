@@ -2,11 +2,26 @@ import { BlockLocation, ItemStack, MinecraftBlockTypes, MinecraftItemTypes, Vect
 
 let query = {};
 
+let airBlock = MinecraftBlockTypes.air;
+let airPerm = airBlock.createDefaultBlockPermutation()
+
+let grassFillOptions = {
+    matchingBlock: airPerm
+}
+
+let grassBlock = MinecraftBlockTypes.grass;
+let grassPerm = grassBlock.createDefaultBlockPermutation()
+
+let nyliumFillOptions = {
+    matchingBlock: grassPerm
+}
+
 const setupId = system.runSchedule(() => {
-    world.getDimension('overworld').fillBlocks(new BlockLocation(-3, 63, -3), new BlockLocation(3, 63, 3), MinecraftBlockTypes.grass);
-    world.getDimension('overworld').fillBlocks(new BlockLocation(0, 64, 0), new BlockLocation(0, 64, 0), MinecraftBlockTypes.sapling);
-    world.getDimension('overworld').fillBlocks(new BlockLocation(-2, 63, 0), new BlockLocation(-2, 63, 0), MinecraftBlockTypes.crimsonNylium);
-    world.getDimension('overworld').fillBlocks(new BlockLocation(2, 63, 0), new BlockLocation(2, 63, 0), MinecraftBlockTypes.warpedNylium);
+    world.getDimension('overworld').fillBlocks(new BlockLocation(-3, 63, -3), new BlockLocation(3, 63, 3), MinecraftBlockTypes.grass, grassFillOptions);
+    if (world.getDimension('overworld').getBlock(new BlockLocation(0, 63, 0)).typeId == 'minecraft:grass')
+        world.getDimension('overworld').fillBlocks(new BlockLocation(0, 64, 0), new BlockLocation(0, 64, 0), MinecraftBlockTypes.sapling, grassFillOptions);
+    world.getDimension('overworld').fillBlocks(new BlockLocation(-2, 63, 0), new BlockLocation(-2, 63, 0), MinecraftBlockTypes.crimsonNylium, nyliumFillOptions);
+    world.getDimension('overworld').fillBlocks(new BlockLocation(2, 63, 0), new BlockLocation(2, 63, 0), MinecraftBlockTypes.warpedNylium, nyliumFillOptions);
     let players = world.getDimension('overworld').getPlayers();
 
     for (let player of players) {
@@ -15,14 +30,13 @@ const setupId = system.runSchedule(() => {
             player.teleport(new Vector(0, 64, 0), world.getDimension("overworld"), 0, 0, false);
             player.onScreenDisplay.setActionBar("Please wait for the set up system to finish.\nThe process takes 5 minutes upon creating\nthe world due to how slow world generation is");
         }
-
     }
 }, 20);
 
-system.runSchedule(() => {
+system.runSchedule(async () => {
     system.clearRunSchedule(setupId);
 
-    world.getDimension("overworld").runCommandAsync("setworldspawn 0 64 0");
+    await world.getDimension("overworld").runCommandAsync("setworldspawn 0 64 0");
 
     let players = world.getDimension('overworld').getPlayers();
     for (let player of players) {
@@ -80,35 +94,20 @@ function detectFlowingWater(block, dir) {
     }
 }
 
-function detectVineToLichen(eventData) {
-    if (world.getDimension("overworld").getBlock(new BlockLocation(Math.floor(eventData.entity.location.x), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z - 1))).typeId == "minecraft:vine")
-        setLichen(Math.floor(eventData.entity.location.x), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z - 1), 4);
-
-    if (world.getDimension("overworld").getBlock(new BlockLocation(Math.floor(eventData.entity.location.x + 1), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z))).typeId == "minecraft:vine")
-        setLichen(Math.floor(eventData.entity.location.x + 1), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z), 8);
-
-    if (world.getDimension("overworld").getBlock(new BlockLocation(Math.floor(eventData.entity.location.x), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z + 1))).typeId == "minecraft:vine")
-        setLichen(Math.floor(eventData.entity.location.x), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z + 1), 16);
-
-    if (world.getDimension("overworld").getBlock(new BlockLocation(Math.floor(eventData.entity.location.x - 1), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z))).typeId == "minecraft:vine")
-        setLichen(Math.floor(eventData.entity.location.x - 1), Math.floor(eventData.entity.location.y - 1), Math.floor(eventData.entity.location.z), 32);
-}
-
-async function setLichen(x, y, z, bit) {
-    await world.getDimension("overworld").runCommandAsync(`setblock ${x} ${y} ${z} glow_lichen [\"multi_face_direction_bits\": ${bit}]`);
-}
-
 function dropEchoShard(eventData) {
-    if (eventData.cause != 'entityAttack' && (eventData.damagingEntity.typeId == "minecraft:warden") && (eventData.damage >= eventData.hurtEntity.getComponent("minecraft:health").current) && (eventData.hurtEntity.typeId == "minecraft:dolphin" || eventData.hurtEntity.typeId == "minecraft:bat"))
+    if (eventData.damageSource.damagingEntity == null)
+        return;
+
+    if (eventData.damageSource.cause != 'entityAttack' && (eventData.damageSource.damagingEntity.typeId == "minecraft:warden") && (eventData.damage >= eventData.hurtEntity.getComponent("minecraft:health").current) && (eventData.hurtEntity.typeId == "minecraft:dolphin" || eventData.hurtEntity.typeId == "minecraft:bat"))
         world.getDimension("overworld").spawnItem(new ItemStack(MinecraftItemTypes.echoShard), new BlockLocation(Math.floor(eventData.hurtEntity.location.x), Math.floor(eventData.hurtEntity.location.y + 1), Math.floor(eventData.hurtEntity.location.z)));
 }
 
-world.events.beforeItemUseOn.subscribe(async (eventData) => {
+world.events.beforeItemUseOn.subscribe((eventData) => {
     let block = world.getDimension("overworld").getBlock(eventData.blockLocation);
     if (eventData.item.typeId == "minecraft:potion" && eventData.item.data == 3 && block.typeId == "minecraft:stone") {
         eventData.cancel = true;
         block.setType(MinecraftBlockTypes.deepslate);
-        await eventData.source.runCommandAsync("clear @s potion 3 1").then(eventData.source.runCommandAsync("give @s minecraft:glass_bottle"));
+        eventData.source.getComponent('minecraft:inventory').container.setItem(eventData.source.selectedSlot, new ItemStack(MinecraftItemTypes.glassBottle, 1, 0));
     }
 });
 
@@ -116,12 +115,39 @@ world.events.beforePistonActivate.subscribe(detectCoalToDiamond);
 
 world.events.blockPlace.subscribe(async (eventData) => {
     if (eventData.block.typeId == "minecraft:sculk_shrieker" && world.getDimension("overworld").getBlock(eventData.block.location.offset(0, -1, 0)).typeId == "minecraft:soul_sand") {
-        eventData.player.runCommandAsync(`say ${eventData.block.typeId}`);
-        world.getDimension("overworld").runCommandAsync(`setblock ${eventData.block.location.x} ${eventData.block.location.y} ${eventData.block.location.z} sculk_shrieker [\"can_summon\": true]`);
+        let shriekerPerm = MinecraftBlockTypes.sculkShrieker.createDefaultBlockPermutation();
+        shriekerPerm.getProperty('can_summon').value = true;
+        eventData.block.setPermutation(shriekerPerm);
     }
 });
 
-world.events.entitySpawn.subscribe(detectVineToLichen);
+world.events.entitySpawn.subscribe((eventData) => {
+    let entity = eventData.entity;
+    let entity_block_loc = new BlockLocation(Math.floor(entity.location.x), Math.floor(entity.location.y), Math.trunc(entity.location.z))
+    let block_at_entity = entity.dimension.getBlock(entity_block_loc);
+    let vinePerm = MinecraftBlockTypes.glowLichen.createDefaultBlockPermutation()
+
+    if (entity.typeId != 'minecraft:lightning_bolt') return;
+
+    if (block_at_entity.typeId != 'minecraft:lightning_rod' || entity.dimension.getBlock(entity_block_loc.offset(0, -1, 0)).typeId != 'minecraft:glowstone') return;
+
+    if (entity.dimension.getBlock(entity_block_loc.offset(0, -1, -1)).typeId == 'minecraft:vine') {
+        vinePerm.getProperty('multi_face_direction_bits').value = 4;
+        entity.dimension.getBlock(entity_block_loc.offset(0, -1, -1)).setPermutation(vinePerm);
+    }
+    if (entity.dimension.getBlock(entity_block_loc.offset(1, -1, 0)).typeId == 'minecraft:vine') {
+        vinePerm.getProperty('multi_face_direction_bits').value = 8;
+        entity.dimension.getBlock(entity_block_loc.offset(1, -1, 0)).setPermutation(vinePerm);
+    }
+    if (entity.dimension.getBlock(entity_block_loc.offset(0, -1, 1)).typeId == 'minecraft:vine') {
+        vinePerm.getProperty('multi_face_direction_bits').value = 16;
+        entity.dimension.getBlock(entity_block_loc.offset(0, -1, 1)).setPermutation(vinePerm);
+    }
+    if (entity.dimension.getBlock(entity_block_loc.offset(-1, -1, 0)).typeId == 'minecraft:vine') {
+        vinePerm.getProperty('multi_face_direction_bits').value = 32;
+        entity.dimension.getBlock(entity_block_loc.offset(-1, -1, 0)).setPermutation(vinePerm);
+    }
+});
 
 world.events.entityHurt.subscribe(dropEchoShard);
 
