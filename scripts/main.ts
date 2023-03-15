@@ -206,6 +206,11 @@ world.events.itemUseOn.subscribe((eventData) => {
 });
 
 world.events.beforePistonActivate.subscribe((eventData) => {
+    if (eventData.block.typeId != 'minecraft:piston') return;
+
+    if (eventData.block.permutation.getProperty('facing_direction') != 0)
+        return;
+
     const coal_location: Vector3 = Vector.add(eventData.block.location, {
         x: 0,
         y: -1,
