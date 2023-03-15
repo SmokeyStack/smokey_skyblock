@@ -11,175 +11,171 @@ import {
     MinecraftBlockTypes,
     MinecraftItemTypes,
     Player,
-    PlayerIterator,
     Vector,
     Vector3
 } from '@minecraft/server';
 
-let air_permutation: BlockPermutation =
+const air_permutation: BlockPermutation =
     BlockPermutation.resolve('minecraft:air');
-let grass_permutation: BlockPermutation =
+const grass_permutation: BlockPermutation =
     BlockPermutation.resolve('minecraft:grass');
 
-const setupId = system.runInterval(() => {
-    world
-        .getDimension('overworld')
-        .fillBlocks(
-            { x: -3, y: 63, z: -3 },
-            { x: 3, y: 63, z: 3 },
-            MinecraftBlockTypes.grass,
+const setup_id = system.runInterval(() => {
+    world.getDimension('overworld').fillBlocks(
+        {
+            x: world.getDefaultSpawnPosition().x - 3,
+            y: 63,
+            z: world.getDefaultSpawnPosition().z - 3
+        },
+        {
+            x: world.getDefaultSpawnPosition().x + 3,
+            y: 63,
+            z: world.getDefaultSpawnPosition().z + 3
+        },
+        MinecraftBlockTypes.grass,
+        {
+            matchingBlock: air_permutation
+        }
+    );
+    if (
+        world.getDimension('overworld').getBlock({
+            x: world.getDefaultSpawnPosition().x,
+            y: 63,
+            z: world.getDefaultSpawnPosition().z
+        }).typeId == 'minecraft:grass'
+    )
+        world.getDimension('overworld').fillBlocks(
+            {
+                x: world.getDefaultSpawnPosition().x,
+                y: 64,
+                z: world.getDefaultSpawnPosition().z
+            },
+            {
+                x: world.getDefaultSpawnPosition().x,
+                y: 64,
+                z: world.getDefaultSpawnPosition().z
+            },
+            MinecraftBlockTypes.sapling,
             {
                 matchingBlock: air_permutation
             }
         );
-    if (
-        world.getDimension('overworld').getBlock({ x: 0, y: 63, z: 0 })
-            .typeId == 'minecraft:grass'
-    )
-        world
-            .getDimension('overworld')
-            .fillBlocks(
-                { x: 0, y: 64, z: 0 },
-                { x: 0, y: 64, z: 0 },
-                MinecraftBlockTypes.sapling,
-                {
-                    matchingBlock: air_permutation
-                }
-            );
-    world
-        .getDimension('overworld')
-        .fillBlocks(
-            { x: -2, y: 63, z: 0 },
-            { x: -2, y: 63, z: 0 },
-            MinecraftBlockTypes.crimsonNylium,
-            {
-                matchingBlock: grass_permutation
-            }
-        );
-    world
-        .getDimension('overworld')
-        .fillBlocks(
-            { x: 2, y: 63, z: 0 },
-            { x: 2, y: 63, z: 0 },
-            MinecraftBlockTypes.warpedNylium,
-            {
-                matchingBlock: grass_permutation
-            }
-        );
-    let players: PlayerIterator = world.getDimension('overworld').getPlayers();
-
-    for (let player of players) {
-        let tags: string[] = player.getTags();
-        if (!tags.includes('safe')) {
-            player.teleport(
-                new Vector(0, 64, 0),
-                world.getDimension('overworld'),
-                0,
-                0,
-                false
-            );
-            player.onScreenDisplay.setActionBar(
-                'Please wait for the set up system to finish.\nThe process takes 5 minutes upon creating\nthe world due to how slow world generation is'
-            );
+    world.getDimension('overworld').fillBlocks(
+        {
+            x: world.getDefaultSpawnPosition().x - 2,
+            y: 63,
+            z: world.getDefaultSpawnPosition().z
+        },
+        {
+            x: world.getDefaultSpawnPosition().x - 2,
+            y: 63,
+            z: world.getDefaultSpawnPosition().z
+        },
+        MinecraftBlockTypes.crimsonNylium,
+        {
+            matchingBlock: grass_permutation
         }
-    }
+    );
+    world.getDimension('overworld').fillBlocks(
+        {
+            x: world.getDefaultSpawnPosition().x + 2,
+            y: 63,
+            z: world.getDefaultSpawnPosition().z
+        },
+        {
+            x: world.getDefaultSpawnPosition().x + 2,
+            y: 63,
+            z: world.getDefaultSpawnPosition().z
+        },
+        MinecraftBlockTypes.warpedNylium,
+        {
+            matchingBlock: grass_permutation
+        }
+    );
 }, 20);
 
-system.runInterval(async () => {
-    system.clearRun(setupId);
-
-    await world
-        .getDimension('overworld')
-        .runCommandAsync('setworldspawn 0 64 0');
-
-    let players: PlayerIterator = world.getDimension('overworld').getPlayers();
-    for (let player of players) {
-        let tags: string[] = player.getTags();
-        if (!tags.includes('safe')) {
-            player.addTag('safe');
-            player.onScreenDisplay.setActionBar('You are now free to move');
-        }
-    }
-}, 6000);
+world.events.blockBreak.subscribe(() => {
+    system.clearRun(setup_id);
+});
 
 system.runInterval(() => {
-    for (let player of world.getDimension('overworld').getPlayers()) {
-        let blockLookedAt: Block = player.getBlockFromViewDirection({
+    for (const player of world.getPlayers()) {
+        const block_looked_at: Block = player.getBlockFromViewDirection({
             maxDistance: 8
         }) as any;
 
-        if (blockLookedAt == null) return;
+        if (block_looked_at == null) return;
 
-        if (blockLookedAt.typeId == 'minecraft:coral_fan_dead') {
-            let coral_color: string = blockLookedAt.permutation.getProperty(
+        if (block_looked_at.typeId == 'minecraft:coral_fan_dead') {
+            const coral_color: string = block_looked_at.permutation.getProperty(
                 'coral_color'
             ) as any;
 
             if (
-                blockLookedAt.isWaterlogged &&
+                block_looked_at.isWaterlogged &&
                 coral_color == 'red' &&
-                (detectFlowingWater(blockLookedAt, 'n') ||
-                    detectFlowingWater(blockLookedAt, 'e') ||
-                    detectFlowingWater(blockLookedAt, 's') ||
-                    detectFlowingWater(blockLookedAt, 'w'))
+                (detectFlowingWater(block_looked_at, 'n') ||
+                    detectFlowingWater(block_looked_at, 'e') ||
+                    detectFlowingWater(block_looked_at, 's') ||
+                    detectFlowingWater(block_looked_at, 'w'))
             )
                 player.dimension.fillBlocks(
-                    Vector.add(blockLookedAt.location, { x: 0, y: 1, z: 0 }),
-                    Vector.add(blockLookedAt.location, { x: 0, y: 1, z: 0 }),
+                    Vector.add(block_looked_at.location, { x: 0, y: 1, z: 0 }),
+                    Vector.add(block_looked_at.location, { x: 0, y: 1, z: 0 }),
                     BlockPermutation.resolve('minecraft:sand', {
                         sand_type: 'red'
                     }),
                     { matchingBlock: BlockPermutation.resolve('minecraft:air') }
                 );
             else if (
-                blockLookedAt.isWaterlogged &&
-                (detectFlowingWater(blockLookedAt, 'n') ||
-                    detectFlowingWater(blockLookedAt, 'e') ||
-                    detectFlowingWater(blockLookedAt, 's') ||
-                    detectFlowingWater(blockLookedAt, 'w'))
+                block_looked_at.isWaterlogged &&
+                (detectFlowingWater(block_looked_at, 'n') ||
+                    detectFlowingWater(block_looked_at, 'e') ||
+                    detectFlowingWater(block_looked_at, 's') ||
+                    detectFlowingWater(block_looked_at, 'w'))
             )
                 world
                     .getDimension('overworld')
                     .spawnItem(
                         new ItemStack(MinecraftItemTypes.sand),
-                        blockLookedAt.location
+                        block_looked_at.location
                     );
 
             if (Math.round(Math.random() * 100) % 4 == 0)
-                blockLookedAt.setType(MinecraftBlockTypes.air);
+                block_looked_at.setType(MinecraftBlockTypes.air);
         }
     }
 }, 20);
 
-function detectFlowingWater(block: Block, dir: string): boolean {
-    switch (dir) {
+function detectFlowingWater(block: Block, direction: string): boolean {
+    switch (direction) {
         case 'n': {
-            let prop: number = world
+            const property: number = world
                 .getDimension('overworld')
                 .getBlock(Vector.add(block.location, { x: 0, y: 0, z: -1 }))
                 .permutation.getProperty('liquid_depth') as any;
-            return prop != 0;
+            return property != 0;
         }
         case 'e': {
-            let prop: number = world
+            const property: number = world
                 .getDimension('overworld')
                 .getBlock(Vector.add(block.location, { x: 1, y: 0, z: 0 }))
                 .permutation.getProperty('liquid_depth') as any;
-            return prop != 0;
+            return property != 0;
         }
         case 's': {
-            let prop: number = world
+            const property: number = world
                 .getDimension('overworld')
                 .getBlock(Vector.add(block.location, { x: 0, y: 0, z: 1 }))
                 .permutation.getProperty('liquid_depth') as any;
-            return prop != 0;
+            return property != 0;
         }
         case 'w': {
-            let prop: number = world
+            const property: number = world
                 .getDimension('overworld')
                 .getBlock(Vector.add(block.location, { x: -1, y: 0, z: 0 }))
                 .permutation.getProperty('liquid_depth') as any;
-            return prop != 0;
+            return property != 0;
         }
         default:
             return false;
@@ -187,38 +183,42 @@ function detectFlowingWater(block: Block, dir: string): boolean {
 }
 
 world.events.itemUseOn.subscribe((eventData) => {
-    let block = world
+    const block: Block = world
         .getDimension('overworld')
         .getBlock(eventData.getBlockLocation());
+
     if (
         eventData.item.typeId == 'minecraft:potion' &&
         block.typeId == 'minecraft:stone'
     ) {
         block.setType(MinecraftBlockTypes.deepslate);
 
-        let player: Player = eventData.source as any;
+        const player: Player = eventData.source as any;
 
-        let item: ItemStack = new ItemStack(MinecraftItemTypes.glassBottle, 1);
-        let inventory_component: EntityInventoryComponent =
+        const item: ItemStack = new ItemStack(
+            MinecraftItemTypes.glassBottle,
+            1
+        );
+        const inventory_component: EntityInventoryComponent =
             eventData.source.getComponent('minecraft:inventory') as any;
         inventory_component.container.setItem(player.selectedSlot, item);
     }
 });
 
 world.events.beforePistonActivate.subscribe((eventData) => {
-    let coal_location: Vector3 = Vector.add(eventData.block.location, {
+    const coal_location: Vector3 = Vector.add(eventData.block.location, {
         x: 0,
         y: -1,
         z: 0
     });
-    let entities: Entity[] = world
+    const entities: Entity[] = world
         .getDimension('overworld')
         .getEntitiesAtBlockLocation(coal_location);
 
-    let item: EntityItemComponent;
-
-    for (let entity of entities) {
-        item = entity.getComponent('minecraft:item') as any;
+    for (const entity of entities) {
+        const item: EntityItemComponent = entity.getComponent(
+            'minecraft:item'
+        ) as any;
 
         if (
             item.itemStack.typeId == 'minecraft:coal' &&
@@ -252,13 +252,13 @@ world.events.blockPlace.subscribe(async (eventData) => {
 });
 
 world.events.entitySpawn.subscribe((eventData) => {
-    let entity = eventData.entity;
-    let entity_block_loc = {
+    const entity = eventData.entity;
+    const entity_block_loc = {
         x: Math.floor(entity.location.x),
         y: Math.floor(entity.location.y),
         z: Math.trunc(entity.location.z)
     };
-    let block_at_entity: Block = entity.dimension.getBlock(entity_block_loc);
+    const block_at_entity: Block = entity.dimension.getBlock(entity_block_loc);
 
     if (entity.typeId != 'minecraft:lightning_bolt') return;
 
@@ -327,7 +327,7 @@ world.events.entitySpawn.subscribe((eventData) => {
 world.events.entityHurt.subscribe((eventData) => {
     if (eventData.damageSource.damagingEntity == null) return;
 
-    let health: EntityHealthComponent = eventData.hurtEntity.getComponent(
+    const health: EntityHealthComponent = eventData.hurtEntity.getComponent(
         'minecraft:health'
     ) as any;
 
