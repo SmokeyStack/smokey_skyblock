@@ -1,21 +1,19 @@
 import {
+    system,
+    world,
+    Block,
+    BlockPermutation,
+    Entity,
+    EntityHealthComponent,
+    EntityItemComponent,
+    EntityInventoryComponent,
     ItemStack,
     MinecraftBlockTypes,
     MinecraftItemTypes,
-    Vector,
-    system,
-    world,
-    BlockPermutation,
-    EntityHealthComponent,
-    PlayerIterator,
-    Entity,
-    Block,
-    EntityItemComponent,
-    EntityInventoryComponent,
     Player,
-    Vector3,
-    BlockPropertyType,
-    Items
+    PlayerIterator,
+    Vector,
+    Vector3
 } from '@minecraft/server';
 
 let air_permutation: BlockPermutation =
@@ -110,6 +108,8 @@ system.runInterval(() => {
             maxDistance: 8
         }) as any;
 
+        if (blockLookedAt == null) return;
+
         if (blockLookedAt.typeId == 'minecraft:coral_fan_dead') {
             let coral_color: string = blockLookedAt.permutation.getProperty(
                 'coral_color'
@@ -123,12 +123,14 @@ system.runInterval(() => {
                     detectFlowingWater(blockLookedAt, 's') ||
                     detectFlowingWater(blockLookedAt, 'w'))
             )
-                world
-                    .getDimension('overworld')
-                    .spawnItem(
-                        new ItemStack('minecraft:sand["sand_type":"red]', 1),
-                        blockLookedAt.location
-                    );
+                player.dimension.fillBlocks(
+                    Vector.add(blockLookedAt.location, { x: 0, y: 1, z: 0 }),
+                    Vector.add(blockLookedAt.location, { x: 0, y: 1, z: 0 }),
+                    BlockPermutation.resolve('minecraft:sand', {
+                        sand_type: 'red'
+                    }),
+                    { matchingBlock: BlockPermutation.resolve('minecraft:air') }
+                );
             else if (
                 blockLookedAt.isWaterlogged &&
                 (detectFlowingWater(blockLookedAt, 'n') ||
@@ -184,7 +186,7 @@ function detectFlowingWater(block: Block, dir: string): boolean {
     }
 }
 
-world.events.beforeItemUseOn.subscribe((eventData) => {
+world.events.itemUseOn.subscribe((eventData) => {
     let block = world
         .getDimension('overworld')
         .getBlock(eventData.getBlockLocation());
@@ -192,7 +194,6 @@ world.events.beforeItemUseOn.subscribe((eventData) => {
         eventData.item.typeId == 'minecraft:potion' &&
         block.typeId == 'minecraft:stone'
     ) {
-        eventData.cancel = true;
         block.setType(MinecraftBlockTypes.deepslate);
 
         let player: Player = eventData.source as any;
