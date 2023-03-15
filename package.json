@@ -1,0 +1,16 @@
+{
+    "dependencies": {
+        "@minecraft/server": "^1.1.0-beta.1.19.70-stable",
+        "typescript": "^4.9.5"
+    },
+    "name": "smokey_skyblock",
+    "description": "Yes, another skyblock add-on. Best of all, you can use this pack on any world, any seed! This one takes inspiration from ilmango's skyblock series! Of course it doesn't have all the features due to Bedrock's limitation.",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "compile": "tsc && regolith run dev"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}
