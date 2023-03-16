@@ -239,7 +239,7 @@ world.events.beforePistonActivate.subscribe((eventData) => {
     }
 });
 
-world.events.blockPlace.subscribe(async (eventData) => {
+world.events.blockPlace.subscribe((eventData) => {
     if (
         eventData.block.typeId == 'minecraft:sculk_shrieker' &&
         world
@@ -329,25 +329,15 @@ world.events.entitySpawn.subscribe((eventData) => {
     }
 });
 
-world.events.entityHurt.subscribe((eventData) => {
-    if (eventData.damageSource.damagingEntity == null) return;
-
-    const health: EntityHealthComponent = eventData.hurtEntity.getComponent(
-        'minecraft:health'
-    ) as any;
-
+world.events.entityDie.subscribe((eventData) => {
     if (
+        eventData.deadEntity.typeId ==
+            ('minecraft:dolphin' || 'minecraft:bat') &&
         eventData.damageSource.cause != 'entityAttack' &&
-        eventData.damageSource.damagingEntity.typeId == 'minecraft:warden' &&
-        eventData.damage >= health.current &&
-        (eventData.hurtEntity.typeId == 'minecraft:dolphin' ||
-            eventData.hurtEntity.typeId == 'minecraft:bat')
+        eventData.damageSource.damagingEntity.typeId == 'minecraft:warden'
     )
-        world
-            .getDimension('overworld')
-            .spawnItem(new ItemStack(MinecraftItemTypes.echoShard), {
-                x: Math.floor(eventData.hurtEntity.location.x),
-                y: Math.floor(eventData.hurtEntity.location.y + 1),
-                z: Math.floor(eventData.hurtEntity.location.z)
-            });
+        eventData.deadEntity.dimension.spawnItem(
+            new ItemStack(MinecraftItemTypes.echoShard),
+            eventData.deadEntity.location
+        );
 });
