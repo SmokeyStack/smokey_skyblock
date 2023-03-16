@@ -4,7 +4,6 @@ import {
     Block,
     BlockPermutation,
     Entity,
-    EntityHealthComponent,
     EntityItemComponent,
     EntityInventoryComponent,
     ItemStack,
@@ -12,7 +11,8 @@ import {
     MinecraftItemTypes,
     Player,
     Vector,
-    Vector3
+    Vector3,
+    MinecraftEffectTypes
 } from '@minecraft/server';
 
 const air_permutation: BlockPermutation =
@@ -330,14 +330,55 @@ world.events.entitySpawn.subscribe((eventData) => {
 });
 
 world.events.entityDie.subscribe((eventData) => {
+    const entity: Entity = eventData.deadEntity;
+
     if (
-        eventData.deadEntity.typeId ==
-            ('minecraft:dolphin' || 'minecraft:bat') &&
+        entity.typeId == ('minecraft:dolphin' || 'minecraft:bat') &&
         eventData.damageSource.cause != 'entityAttack' &&
         eventData.damageSource.damagingEntity.typeId == 'minecraft:warden'
-    )
-        eventData.deadEntity.dimension.spawnItem(
+    ) {
+        entity.dimension.spawnItem(
             new ItemStack(MinecraftItemTypes.echoShard),
-            eventData.deadEntity.location
+            entity.location
         );
+        return;
+    }
+
+    if (entity.typeId == 'minecraft:ender_dragon') {
+        eventData.deadEntity.dimension.spawnEntity(
+            'minecraft:shulker',
+            entity.location
+        );
+        return;
+    }
+
+    if (
+        entity.typeId == 'minecraft:endermite' &&
+        entity.getEffect(MinecraftEffectTypes.levitation) &&
+        entity.getEffect(MinecraftEffectTypes.slowFalling)
+    ) {
+        if (Math.round(Math.random() * 40) % 40 == 0)
+            entity.dimension.spawnItem(
+                new ItemStack(MinecraftItemTypes.elytra),
+                entity.location
+            );
+
+        return;
+    }
+});
+
+world.events.entityHurt.subscribe((eventData) => {
+    const entity: Entity = eventData.hurtEntity;
+
+    if (
+        entity.typeId == 'minecraft:guardian' &&
+        eventData.damageSource.cause == 'lightning'
+    ) {
+        entity.dimension.spawnEntity(
+            'minecraft:elder_guardian',
+            entity.location
+        );
+        entity.teleport({ x: 0, y: -100, z: 0 }, entity.dimension, 0, 0);
+        entity.kill();
+    }
 });
