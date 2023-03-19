@@ -1,0 +1,26 @@
+{
+	"format_version": 1.12,
+	"minecraft:recipe_shaped": {
+		"description": {
+			"identifier": "smokey_skyblock:dead_bush"
+		},
+		"tags": [
+			"crafting_table"
+		],
+		"pattern": [
+			"###",
+			"###",
+			" # "
+		],
+		"key": {
+			"#": {
+				"item": "minecraft:stick"
+			}
+		},
+		"result": [
+			{
+				"item": "minecraft:deadbush"
+			}
+		]
+	}
+}

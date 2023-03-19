@@ -1,0 +1,26 @@
+{
+	"format_version": "1.19.10",
+	"minecraft:recipe_shapeless": {
+		"description": {
+			"identifier": "smokey_skyblock:copper_stone_ore"
+		},
+		"tags": [
+			"crafting_table"
+		],
+		"ingredients": [
+			{
+				"count": 1,
+				"item": "minecraft:copper_block"
+			},
+			{
+				"item": "minecraft:stone",
+				"count": 1
+			}
+		],
+		"result": [
+			{
+				"item": "minecraft:copper_ore"
+			}
+		]
+	}
+}
