@@ -382,3 +382,39 @@ world.events.entityHurt.subscribe((eventData) => {
         entity.kill();
     }
 });
+
+world.events.itemUse.subscribe((eventData) => {
+    if (
+        eventData.item.typeId != 'minecraft:amethyst_block' ||
+        eventData.source.typeId != 'minecraft:player'
+    )
+        return;
+
+    let player: Player = eventData.source as any;
+
+    let entities: Entity[] = eventData.source.getEntitiesFromViewDirection({
+        maxDistance: 3
+    });
+
+    let inventory: EntityInventoryComponent = eventData.source.getComponent(
+        'minecraft:inventory'
+    ) as any;
+
+    entities.forEach((entity) => {
+        if (entity.typeId != 'minecraft:vex') return;
+
+        entity.dimension.spawnEntity('minecraft:allay', entity.location);
+        entity.teleport({ x: 0, y: -100, z: 0 }, entity.dimension, 0, 0);
+        entity.kill();
+
+        if (eventData.item.amount == 1) {
+            inventory.container.clearItem(player.selectedSlot);
+            return;
+        }
+
+        inventory.container.setItem(
+            player.selectedSlot,
+            new ItemStack('minecraft:amethyst_block', eventData.item.amount - 1)
+        );
+    });
+});
