@@ -12,13 +12,24 @@ import {
     Player,
     Vector,
     Vector3,
-    MinecraftEffectTypes
+    MinecraftEffectTypes,
+    Direction
 } from '@minecraft/server';
 
 const air_permutation: BlockPermutation =
     BlockPermutation.resolve('minecraft:air');
 const grass_permutation: BlockPermutation =
     BlockPermutation.resolve('minecraft:grass');
+
+const check: Map<Vector3, string> = new Map<Vector3, string>();
+check.set({ x: 1, y: 0, z: 0 }, 'minecraft:calcite');
+check.set({ x: -1, y: 0, z: 0 }, 'minecraft:calcite');
+check.set({ x: 0, y: 0, z: 1 }, 'minecraft:calcite');
+check.set({ x: 0, y: 0, z: -1 }, 'minecraft:calcite');
+check.set({ x: 2, y: 0, z: 0 }, 'minecraft:smooth_basalt');
+check.set({ x: -2, y: 0, z: 0 }, 'minecraft:smooth_basalt');
+check.set({ x: 0, y: 0, z: 2 }, 'minecraft:smooth_basalt');
+check.set({ x: 0, y: 0, z: -2 }, 'minecraft:smooth_basalt');
 
 const setup_id = system.runInterval(() => {
     world.getDimension('overworld').fillBlocks(
@@ -417,4 +428,60 @@ world.events.itemUse.subscribe((eventData) => {
             new ItemStack('minecraft:amethyst_block', eventData.item.amount - 1)
         );
     });
+});
+
+world.events.itemUseOn.subscribe((eventData) => {
+    if (eventData.item.typeId != 'minecraft:lava_bucket') return;
+
+    var status_check: boolean = true;
+    var offset: Vector3;
+
+    switch (eventData.blockFace) {
+        case Direction.down:
+            offset = { x: 0, y: -1, z: 0 };
+            break;
+        case Direction.east:
+            offset = { x: 1, y: 0, z: 0 };
+            break;
+        case Direction.north:
+            offset = { x: 0, y: 0, z: -1 };
+            break;
+        case Direction.south:
+            offset = { x: 0, y: 0, z: 1 };
+            break;
+        case Direction.up:
+            offset = { x: 0, y: 1, z: 0 };
+            break;
+        case Direction.west:
+            offset = { x: -1, y: 0, z: 0 };
+            break;
+        default:
+            break;
+    }
+
+    const original_block: Block = eventData.source.dimension.getBlock(
+        Vector.add(eventData.getBlockLocation(), offset)
+    );
+
+    check.forEach((entry, location) => {
+        if (
+            eventData.source.dimension.getBlock(
+                Vector.add(original_block.location, location)
+            ).typeId != entry
+        ) {
+            status_check = false;
+            return;
+        }
+    });
+
+    if (status_check)
+        system.runTimeout(() => {
+            if (
+                eventData.source.dimension.getBlock(
+                    Vector.add(eventData.getBlockLocation(), offset)
+                ).typeId != 'minecraft:lava'
+            )
+                return;
+            original_block.setType(MinecraftBlockTypes.buddingAmethyst);
+        }, 1200);
 });
