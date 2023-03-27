@@ -485,3 +485,15 @@ world.events.itemUseOn.subscribe((eventData) => {
             original_block.setType(MinecraftBlockTypes.buddingAmethyst);
         }, 1200);
 });
+
+world.events.blockBreak.subscribe((eventData) => {
+    if (
+        eventData.brokenBlockPermutation.type.id != 'minecraft:flowering_azalea'
+    )
+        return;
+    if (Math.random() * 100 < 5)
+        eventData.dimension.spawnItem(
+            new ItemStack('minecraft:spore_blossom'),
+            eventData.block.location
+        );
+});
