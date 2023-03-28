@@ -1,5 +1,5 @@
 /build
 /.regolith
 node_modules
-package.json
-package-lock.json
+/packs/BP/scripts/*
+!/packs/BP/scripts/.gitkeep

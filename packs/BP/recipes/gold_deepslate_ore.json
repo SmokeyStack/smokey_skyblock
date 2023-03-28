@@ -1,0 +1,26 @@
+{
+	"format_version": "1.19.10",
+	"minecraft:recipe_shapeless": {
+		"description": {
+			"identifier": "smokey_skyblock:gold_deepslate_ore"
+		},
+		"tags": [
+			"crafting_table"
+		],
+		"ingredients": [
+			{
+				"count": 3,
+				"item": "minecraft:gold_ingot"
+			},
+			{
+				"count": 1,
+				"item": "minecraft:cobbled_deepslate"
+			}
+		],
+		"result": [
+			{
+				"item": "minecraft:deepslate_gold_ore"
+			}
+		]
+	}
+}
