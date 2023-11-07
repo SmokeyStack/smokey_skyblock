@@ -7,23 +7,14 @@
 	},
 	"regolith": {
 		"dataPath": "./packs/data",
-		"filterDefinitions": {
-			"texture_list": {
-				"url": "github.com/Bedrock-OSS/regolith-filters",
-				"version": "1.1.2"
-			}
-		},
+		"filterDefinitions": {},
 		"profiles": {
 			"build": {
 				"export": {
 					"readOnly": false,
 					"target": "local"
 				},
-				"filters": [
-					{
-						"filter": "texture_list"
-					}
-				]
+				"filters": []
 			},
 			"dev": {
 				"export": {

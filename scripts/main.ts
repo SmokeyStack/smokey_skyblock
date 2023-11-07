@@ -7,12 +7,9 @@ import {
     EntityItemComponent,
     EntityInventoryComponent,
     ItemStack,
-    MinecraftBlockTypes,
-    MinecraftItemTypes,
     Player,
     Vector,
     Vector3,
-    MinecraftEffectTypes,
     Direction
 } from '@minecraft/server';
 
@@ -34,78 +31,78 @@ check.set({ x: 0, y: 0, z: -2 }, 'minecraft:smooth_basalt');
 const setup_id = system.runInterval(() => {
     world.getDimension('overworld').fillBlocks(
         {
-            x: world.getDefaultSpawnPosition().x - 3,
+            x: world.getDefaultSpawnLocation().x - 3,
             y: 63,
-            z: world.getDefaultSpawnPosition().z - 3
+            z: world.getDefaultSpawnLocation().z - 3
         },
         {
-            x: world.getDefaultSpawnPosition().x + 3,
+            x: world.getDefaultSpawnLocation().x + 3,
             y: 63,
-            z: world.getDefaultSpawnPosition().z + 3
+            z: world.getDefaultSpawnLocation().z + 3
         },
-        MinecraftBlockTypes.grass,
+        'minecraft:grass',
         {
             matchingBlock: air_permutation
         }
     );
     if (
         world.getDimension('overworld').getBlock({
-            x: world.getDefaultSpawnPosition().x,
+            x: world.getDefaultSpawnLocation().x,
             y: 63,
-            z: world.getDefaultSpawnPosition().z
+            z: world.getDefaultSpawnLocation().z
         }).typeId == 'minecraft:grass'
     )
         world.getDimension('overworld').fillBlocks(
             {
-                x: world.getDefaultSpawnPosition().x,
+                x: world.getDefaultSpawnLocation().x,
                 y: 64,
-                z: world.getDefaultSpawnPosition().z
+                z: world.getDefaultSpawnLocation().z
             },
             {
-                x: world.getDefaultSpawnPosition().x,
+                x: world.getDefaultSpawnLocation().x,
                 y: 64,
-                z: world.getDefaultSpawnPosition().z
+                z: world.getDefaultSpawnLocation().z
             },
-            MinecraftBlockTypes.sapling,
+            'minecraft:sapling',
             {
                 matchingBlock: air_permutation
             }
         );
     world.getDimension('overworld').fillBlocks(
         {
-            x: world.getDefaultSpawnPosition().x - 2,
+            x: world.getDefaultSpawnLocation().x - 2,
             y: 63,
-            z: world.getDefaultSpawnPosition().z
+            z: world.getDefaultSpawnLocation().z
         },
         {
-            x: world.getDefaultSpawnPosition().x - 2,
+            x: world.getDefaultSpawnLocation().x - 2,
             y: 63,
-            z: world.getDefaultSpawnPosition().z
+            z: world.getDefaultSpawnLocation().z
         },
-        MinecraftBlockTypes.crimsonNylium,
+        'minecraft:crimson_nylium',
         {
             matchingBlock: grass_permutation
         }
     );
     world.getDimension('overworld').fillBlocks(
         {
-            x: world.getDefaultSpawnPosition().x + 2,
+            x: world.getDefaultSpawnLocation().x + 2,
             y: 63,
-            z: world.getDefaultSpawnPosition().z
+            z: world.getDefaultSpawnLocation().z
         },
         {
-            x: world.getDefaultSpawnPosition().x + 2,
+            x: world.getDefaultSpawnLocation().x + 2,
             y: 63,
-            z: world.getDefaultSpawnPosition().z
+            z: world.getDefaultSpawnLocation().z
         },
-        MinecraftBlockTypes.warpedNylium,
+        'minecraft:warped_nylium',
         {
             matchingBlock: grass_permutation
         }
     );
 }, 20);
 
-world.events.blockBreak.subscribe(() => {
+world.beforeEvents.playerBreakBlock.subscribe(() => {
     system.clearRun(setup_id);
 });
 
@@ -113,12 +110,12 @@ system.runInterval(() => {
     for (const player of world.getPlayers()) {
         const block_looked_at: Block = player.getBlockFromViewDirection({
             maxDistance: 8
-        }) as any;
+        }).block;
 
         if (block_looked_at == null) return;
 
         if (block_looked_at.typeId == 'minecraft:coral_fan_dead') {
-            const coral_color: string = block_looked_at.permutation.getProperty(
+            const coral_color: string = block_looked_at.permutation.getState(
                 'coral_color'
             ) as any;
 
@@ -148,15 +145,15 @@ system.runInterval(() => {
                 world
                     .getDimension('overworld')
                     .spawnItem(
-                        new ItemStack(MinecraftItemTypes.sand),
+                        new ItemStack('minecraft:sand'),
                         block_looked_at.location
                     );
 
             if (Math.round(Math.random() * 100) % 4 == 0)
-                block_looked_at.setType(MinecraftBlockTypes.air);
+                block_looked_at.setType('minecraft:air');
         }
     }
-}, 20);
+}, 100);
 
 function detectFlowingWater(block: Block, direction: string): boolean {
     switch (direction) {
@@ -164,28 +161,28 @@ function detectFlowingWater(block: Block, direction: string): boolean {
             const property: number = world
                 .getDimension('overworld')
                 .getBlock(Vector.add(block.location, { x: 0, y: 0, z: -1 }))
-                .permutation.getProperty('liquid_depth') as any;
+                .permutation.getState('liquid_depth') as any;
             return property != 0;
         }
         case 'e': {
             const property: number = world
                 .getDimension('overworld')
                 .getBlock(Vector.add(block.location, { x: 1, y: 0, z: 0 }))
-                .permutation.getProperty('liquid_depth') as any;
+                .permutation.getState('liquid_depth') as any;
             return property != 0;
         }
         case 's': {
             const property: number = world
                 .getDimension('overworld')
                 .getBlock(Vector.add(block.location, { x: 0, y: 0, z: 1 }))
-                .permutation.getProperty('liquid_depth') as any;
+                .permutation.getState('liquid_depth') as any;
             return property != 0;
         }
         case 'w': {
             const property: number = world
                 .getDimension('overworld')
                 .getBlock(Vector.add(block.location, { x: -1, y: 0, z: 0 }))
-                .permutation.getProperty('liquid_depth') as any;
+                .permutation.getState('liquid_depth') as any;
             return property != 0;
         }
         default:
@@ -193,34 +190,28 @@ function detectFlowingWater(block: Block, direction: string): boolean {
     }
 }
 
-world.events.itemUseOn.subscribe((eventData) => {
-    const block: Block = world
-        .getDimension('overworld')
-        .getBlock(eventData.getBlockLocation());
+world.afterEvents.playerInteractWithBlock.subscribe((eventData) => {
+    const block: Block = eventData.block;
 
     if (
-        eventData.item.typeId == 'minecraft:potion' &&
+        eventData.itemStack.typeId == 'minecraft:potion' &&
         block.typeId == 'minecraft:stone'
     ) {
-        block.setType(MinecraftBlockTypes.deepslate);
+        block.setType('minecraft:deepslate');
 
-        const player: Player = eventData.source as any;
+        const player: Player = eventData.player;
 
-        const item: ItemStack = new ItemStack(
-            MinecraftItemTypes.glassBottle,
-            1
-        );
+        const item: ItemStack = new ItemStack('minecraft:glass_bottle', 1);
         const inventory_component: EntityInventoryComponent =
-            eventData.source.getComponent('minecraft:inventory') as any;
+            eventData.player.getComponent('minecraft:inventory') as any;
         inventory_component.container.setItem(player.selectedSlot, item);
     }
 });
 
-world.events.beforePistonActivate.subscribe((eventData) => {
+world.afterEvents.pistonActivate.subscribe((eventData) => {
     if (eventData.block.typeId != 'minecraft:piston') return;
 
-    if (eventData.block.permutation.getProperty('facing_direction') != 0)
-        return;
+    if (eventData.block.permutation.getState('facing_direction') != 0) return;
 
     const coal_location: Vector3 = Vector.add(eventData.block.location, {
         x: 0,
@@ -243,14 +234,11 @@ world.events.beforePistonActivate.subscribe((eventData) => {
             entity.kill();
         world
             .getDimension('overworld')
-            .spawnItem(
-                new ItemStack(MinecraftItemTypes.diamond),
-                coal_location
-            );
+            .spawnItem(new ItemStack('minecraft:diamond'), coal_location);
     }
 });
 
-world.events.blockPlace.subscribe((eventData) => {
+world.afterEvents.playerPlaceBlock.subscribe((eventData) => {
     if (
         eventData.block.typeId == 'minecraft:sculk_shrieker' &&
         world
@@ -267,80 +255,96 @@ world.events.blockPlace.subscribe((eventData) => {
     }
 });
 
-world.events.entitySpawn.subscribe((eventData) => {
+world.afterEvents.entitySpawn.subscribe((eventData) => {
     const entity = eventData.entity;
     const entity_block_loc = {
         x: Math.floor(entity.location.x),
         y: Math.floor(entity.location.y),
         z: Math.trunc(entity.location.z)
     };
-    const block_at_entity: Block = entity.dimension.getBlock(entity_block_loc);
 
     if (entity.typeId != 'minecraft:lightning_bolt') return;
 
-    if (
-        block_at_entity.typeId != 'minecraft:lightning_rod' ||
-        entity.dimension.getBlock(
-            Vector.add(entity_block_loc, { x: 0, y: -1, z: 0 })
-        ).typeId != 'minecraft:glowstone'
-    )
-        return;
+    let is_glowstone: boolean = false;
+    let glowstone_location: Vector3;
+    // let vine_permutation: BlockPermutation = BlockPermutation.resolve('minecrfat:vine',
+
+    for (let x = -1; x < 2; x++) {
+        for (let y = -1; y < 2; y++) {
+            for (let z = -1; z < 2; z++) {
+                if (
+                    entity.dimension.getBlock(
+                        Vector.add(entity_block_loc, { x, y, z })
+                    ).typeId == 'minecraft:glowstone'
+                ) {
+                    is_glowstone = true;
+                    glowstone_location = Vector.add(entity_block_loc, {
+                        x,
+                        y,
+                        z
+                    });
+                }
+            }
+        }
+    }
+
+    if (!is_glowstone) return;
 
     if (
         entity.dimension.getBlock(
-            Vector.add(entity_block_loc, { x: 0, y: -1, z: -1 })
+            Vector.add(glowstone_location, { x: 0, y: -1, z: -1 })
         ).typeId == 'minecraft:vine'
     ) {
         entity.dimension
-            .getBlock(Vector.add(entity_block_loc, { x: 0, y: -1, z: -1 }))
+            .getBlock(Vector.add(glowstone_location, { x: 0, y: -1, z: -1 }))
             .setPermutation(
-                BlockPermutation.resolve('minecraft:vine', {
+                BlockPermutation.resolve('minecraft:glow_lichen', {
                     multi_face_direction_bits: 4
                 })
             );
     }
     if (
         entity.dimension.getBlock(
-            Vector.add(entity_block_loc, { x: 1, y: -1, z: 0 })
+            Vector.add(glowstone_location, { x: 1, y: -1, z: 0 })
         ).typeId == 'minecraft:vine'
     ) {
         entity.dimension
-            .getBlock(Vector.add(entity_block_loc, { x: 1, y: -1, z: 0 }))
+            .getBlock(Vector.add(glowstone_location, { x: 1, y: -1, z: 0 }))
             .setPermutation(
-                BlockPermutation.resolve('minecraft:vine', {
+                BlockPermutation.resolve('minecraft:glow_lichen', {
                     multi_face_direction_bits: 8
                 })
             );
     }
     if (
         entity.dimension.getBlock(
-            Vector.add(entity_block_loc, { x: 0, y: -1, z: 1 })
+            Vector.add(glowstone_location, { x: 0, y: -1, z: 1 })
         ).typeId == 'minecraft:vine'
     ) {
         entity.dimension
-            .getBlock(Vector.add(entity_block_loc, { x: 0, y: -1, z: 1 }))
+            .getBlock(Vector.add(glowstone_location, { x: 0, y: -1, z: 1 }))
             .setPermutation(
-                BlockPermutation.resolve('minecraft:vine', {
+                BlockPermutation.resolve('minecraft:glow_lichen', {
                     multi_face_direction_bits: 16
                 })
             );
     }
     if (
         entity.dimension.getBlock(
-            Vector.add(entity_block_loc, { x: -1, y: -1, z: 0 })
+            Vector.add(glowstone_location, { x: -1, y: -1, z: 0 })
         ).typeId == 'minecraft:vine'
     ) {
         entity.dimension
-            .getBlock(Vector.add(entity_block_loc, { x: -1, y: -1, z: 0 }))
+            .getBlock(Vector.add(glowstone_location, { x: -1, y: -1, z: 0 }))
             .setPermutation(
-                BlockPermutation.resolve('minecraft:vine', {
+                BlockPermutation.resolve('minecraft:glow_lichen', {
                     multi_face_direction_bits: 32
                 })
             );
     }
 });
 
-world.events.entityDie.subscribe((eventData) => {
+world.afterEvents.entityDie.subscribe((eventData) => {
     const entity: Entity = eventData.deadEntity;
 
     if (
@@ -349,7 +353,7 @@ world.events.entityDie.subscribe((eventData) => {
         eventData.damageSource.damagingEntity.typeId == 'minecraft:warden'
     ) {
         entity.dimension.spawnItem(
-            new ItemStack(MinecraftItemTypes.echoShard),
+            new ItemStack('minecraft:echo_shard'),
             entity.location
         );
         return;
@@ -365,12 +369,12 @@ world.events.entityDie.subscribe((eventData) => {
 
     if (
         entity.typeId == 'minecraft:endermite' &&
-        entity.getEffect(MinecraftEffectTypes.levitation) &&
-        entity.getEffect(MinecraftEffectTypes.slowFalling)
+        entity.getEffect('levitation') &&
+        entity.getEffect('slow_falling')
     ) {
         if (Math.round(Math.random() * 40) % 40 == 0)
             entity.dimension.spawnItem(
-                new ItemStack(MinecraftItemTypes.elytra),
+                new ItemStack('minecraft:elytra'),
                 entity.location
             );
 
@@ -378,7 +382,7 @@ world.events.entityDie.subscribe((eventData) => {
     }
 });
 
-world.events.entityHurt.subscribe((eventData) => {
+world.afterEvents.entityHurt.subscribe((eventData) => {
     const entity: Entity = eventData.hurtEntity;
 
     if (
@@ -389,14 +393,13 @@ world.events.entityHurt.subscribe((eventData) => {
             'minecraft:elder_guardian',
             entity.location
         );
-        entity.teleport({ x: 0, y: -100, z: 0 }, entity.dimension, 0, 0);
-        entity.kill();
+        entity.remove();
     }
 });
 
-world.events.itemUse.subscribe((eventData) => {
+world.beforeEvents.itemUse.subscribe((eventData) => {
     if (
-        eventData.item.typeId != 'minecraft:amethyst_block' ||
+        eventData.itemStack.typeId != 'minecraft:amethyst_block' ||
         eventData.source.typeId != 'minecraft:player'
     )
         return;
@@ -405,7 +408,7 @@ world.events.itemUse.subscribe((eventData) => {
 
     let entities: Entity[] = eventData.source.getEntitiesFromViewDirection({
         maxDistance: 3
-    });
+    }) as any;
 
     let inventory: EntityInventoryComponent = eventData.source.getComponent(
         'minecraft:inventory'
@@ -415,44 +418,46 @@ world.events.itemUse.subscribe((eventData) => {
         if (entity.typeId != 'minecraft:vex') return;
 
         entity.dimension.spawnEntity('minecraft:allay', entity.location);
-        entity.teleport({ x: 0, y: -100, z: 0 }, entity.dimension, 0, 0);
-        entity.kill();
+        entity.remove();
 
-        if (eventData.item.amount == 1) {
-            inventory.container.clearItem(player.selectedSlot);
+        if (eventData.itemStack.amount == 1) {
+            inventory.container.getSlot(player.selectedSlot).amount = 0;
             return;
         }
 
         inventory.container.setItem(
             player.selectedSlot,
-            new ItemStack('minecraft:amethyst_block', eventData.item.amount - 1)
+            new ItemStack(
+                'minecraft:amethyst_block',
+                eventData.itemStack.amount - 1
+            )
         );
     });
 });
 
-world.events.itemUseOn.subscribe((eventData) => {
-    if (eventData.item.typeId != 'minecraft:lava_bucket') return;
+world.beforeEvents.itemUseOn.subscribe((eventData) => {
+    if (eventData.itemStack.typeId != 'minecraft:lava_bucket') return;
 
     var status_check: boolean = true;
     var offset: Vector3;
 
     switch (eventData.blockFace) {
-        case Direction.down:
+        case Direction.Down:
             offset = { x: 0, y: -1, z: 0 };
             break;
-        case Direction.east:
+        case Direction.East:
             offset = { x: 1, y: 0, z: 0 };
             break;
-        case Direction.north:
+        case Direction.North:
             offset = { x: 0, y: 0, z: -1 };
             break;
-        case Direction.south:
+        case Direction.South:
             offset = { x: 0, y: 0, z: 1 };
             break;
-        case Direction.up:
+        case Direction.Up:
             offset = { x: 0, y: 1, z: 0 };
             break;
-        case Direction.west:
+        case Direction.West:
             offset = { x: -1, y: 0, z: 0 };
             break;
         default:
@@ -460,7 +465,7 @@ world.events.itemUseOn.subscribe((eventData) => {
     }
 
     const original_block: Block = eventData.source.dimension.getBlock(
-        Vector.add(eventData.getBlockLocation(), offset)
+        Vector.add(eventData.block.location, offset)
     );
 
     check.forEach((entry, location) => {
@@ -478,19 +483,16 @@ world.events.itemUseOn.subscribe((eventData) => {
         system.runTimeout(() => {
             if (
                 eventData.source.dimension.getBlock(
-                    Vector.add(eventData.getBlockLocation(), offset)
+                    Vector.add(eventData.block.location, offset)
                 ).typeId != 'minecraft:lava'
             )
                 return;
-            original_block.setType(MinecraftBlockTypes.buddingAmethyst);
+            original_block.setType('minecraft:budding_amethyst');
         }, 1200);
 });
 
-world.events.blockBreak.subscribe((eventData) => {
-    if (
-        eventData.brokenBlockPermutation.type.id != 'minecraft:flowering_azalea'
-    )
-        return;
+world.beforeEvents.playerBreakBlock.subscribe((eventData) => {
+    if (eventData.block.type.id != 'minecraft:flowering_azalea') return;
     if (Math.random() * 100 < 5)
         eventData.dimension.spawnItem(
             new ItemStack('minecraft:spore_blossom'),

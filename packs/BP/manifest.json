@@ -1,18 +1,18 @@
 {
     "format_version": 2,
     "header": {
-        "name": "Smokey's Skyblock",
+        "name": "SmokeyStack's Skyblock",
         "description": "Made By SmokeyStack",
         "uuid": "7c05474e-68f6-450e-816e-cb1be675dff6",
         "version": [
             1,
-            0,
+            1,
             0
         ],
         "min_engine_version": [
             1,
-            19,
-            70
+            20,
+            40
         ]
     },
     "modules": [
@@ -21,7 +21,7 @@
             "uuid": "ba2cc4b4-0ea4-4a3a-a28b-803b521c7c06",
             "version": [
                 1,
-                0,
+                1,
                 0
             ]
         },
@@ -39,7 +39,7 @@
     "dependencies": [
         {
             "module_name": "@minecraft/server",
-            "version": "1.1.0-beta"
+            "version": "1.7.0-beta"
         }
     ]
 }
