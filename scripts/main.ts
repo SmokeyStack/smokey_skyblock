@@ -10,7 +10,8 @@ import {
     Player,
     Vector,
     Vector3,
-    Direction
+    Direction,
+    EntityDamageCause
 } from '@minecraft/server';
 
 const air_permutation: BlockPermutation =
@@ -267,7 +268,6 @@ world.afterEvents.entitySpawn.subscribe((eventData) => {
 
     let is_glowstone: boolean = false;
     let glowstone_location: Vector3;
-    // let vine_permutation: BlockPermutation = BlockPermutation.resolve('minecrfat:vine',
 
     for (let x = -1; x < 2; x++) {
         for (let y = -1; y < 2; y++) {
@@ -292,11 +292,11 @@ world.afterEvents.entitySpawn.subscribe((eventData) => {
 
     if (
         entity.dimension.getBlock(
-            Vector.add(glowstone_location, { x: 0, y: -1, z: -1 })
+            Vector.add(glowstone_location, { x: 0, y: 0, z: -1 })
         ).typeId == 'minecraft:vine'
     ) {
         entity.dimension
-            .getBlock(Vector.add(glowstone_location, { x: 0, y: -1, z: -1 }))
+            .getBlock(Vector.add(glowstone_location, { x: 0, y: 0, z: -1 }))
             .setPermutation(
                 BlockPermutation.resolve('minecraft:glow_lichen', {
                     multi_face_direction_bits: 4
@@ -305,11 +305,11 @@ world.afterEvents.entitySpawn.subscribe((eventData) => {
     }
     if (
         entity.dimension.getBlock(
-            Vector.add(glowstone_location, { x: 1, y: -1, z: 0 })
+            Vector.add(glowstone_location, { x: 1, y: 0, z: 0 })
         ).typeId == 'minecraft:vine'
     ) {
         entity.dimension
-            .getBlock(Vector.add(glowstone_location, { x: 1, y: -1, z: 0 }))
+            .getBlock(Vector.add(glowstone_location, { x: 1, y: 0, z: 0 }))
             .setPermutation(
                 BlockPermutation.resolve('minecraft:glow_lichen', {
                     multi_face_direction_bits: 8
@@ -318,11 +318,11 @@ world.afterEvents.entitySpawn.subscribe((eventData) => {
     }
     if (
         entity.dimension.getBlock(
-            Vector.add(glowstone_location, { x: 0, y: -1, z: 1 })
+            Vector.add(glowstone_location, { x: 0, y: 0, z: 1 })
         ).typeId == 'minecraft:vine'
     ) {
         entity.dimension
-            .getBlock(Vector.add(glowstone_location, { x: 0, y: -1, z: 1 }))
+            .getBlock(Vector.add(glowstone_location, { x: 0, y: 0, z: 1 }))
             .setPermutation(
                 BlockPermutation.resolve('minecraft:glow_lichen', {
                     multi_face_direction_bits: 16
@@ -331,11 +331,11 @@ world.afterEvents.entitySpawn.subscribe((eventData) => {
     }
     if (
         entity.dimension.getBlock(
-            Vector.add(glowstone_location, { x: -1, y: -1, z: 0 })
+            Vector.add(glowstone_location, { x: -1, y: 0, z: 0 })
         ).typeId == 'minecraft:vine'
     ) {
         entity.dimension
-            .getBlock(Vector.add(glowstone_location, { x: -1, y: -1, z: 0 }))
+            .getBlock(Vector.add(glowstone_location, { x: -1, y: 0, z: 0 }))
             .setPermutation(
                 BlockPermutation.resolve('minecraft:glow_lichen', {
                     multi_face_direction_bits: 32
@@ -345,94 +345,77 @@ world.afterEvents.entitySpawn.subscribe((eventData) => {
 });
 
 world.afterEvents.entityDie.subscribe((eventData) => {
-    const entity: Entity = eventData.deadEntity;
+    const ENTITY: Entity = eventData.deadEntity;
 
     if (
-        entity.typeId == ('minecraft:dolphin' || 'minecraft:bat') &&
-        eventData.damageSource.cause != 'entityAttack' &&
-        eventData.damageSource.damagingEntity.typeId == 'minecraft:warden'
-    ) {
-        entity.dimension.spawnItem(
-            new ItemStack('minecraft:echo_shard'),
-            entity.location
+        (ENTITY.typeId == 'minecraft:bat' ||
+            ENTITY.typeId == 'minecraft:dolphin') &&
+        eventData.damageSource.cause == EntityDamageCause.sonicBoom
+    )
+        ENTITY.dimension.spawnItem(
+            new ItemStack('minecraft:echo_shard', 1),
+            ENTITY.location
         );
-        return;
-    }
 
-    if (entity.typeId == 'minecraft:ender_dragon') {
+    if (ENTITY.typeId == 'minecraft:ender_dragon')
         eventData.deadEntity.dimension.spawnEntity(
             'minecraft:shulker',
-            entity.location
+            ENTITY.location
         );
-        return;
-    }
 
     if (
-        entity.typeId == 'minecraft:endermite' &&
-        entity.getEffect('levitation') &&
-        entity.getEffect('slow_falling')
-    ) {
+        ENTITY.typeId == 'minecraft:endermite' &&
+        ENTITY.getEffect('slow_falling')
+    )
         if (Math.round(Math.random() * 40) % 40 == 0)
-            entity.dimension.spawnItem(
+            ENTITY.dimension.spawnItem(
                 new ItemStack('minecraft:elytra'),
-                entity.location
+                ENTITY.location
             );
-
-        return;
-    }
 });
 
 world.afterEvents.entityHurt.subscribe((eventData) => {
-    const entity: Entity = eventData.hurtEntity;
+    const ENTITY: Entity = eventData.hurtEntity;
 
     if (
-        entity.typeId == 'minecraft:guardian' &&
+        ENTITY.typeId == 'minecraft:guardian' &&
         eventData.damageSource.cause == 'lightning'
     ) {
-        entity.dimension.spawnEntity(
+        ENTITY.dimension.spawnEntity(
             'minecraft:elder_guardian',
-            entity.location
+            ENTITY.location
         );
-        entity.remove();
+        ENTITY.remove();
     }
 });
 
-world.beforeEvents.itemUse.subscribe((eventData) => {
-    if (
-        eventData.itemStack.typeId != 'minecraft:amethyst_block' ||
-        eventData.source.typeId != 'minecraft:player'
-    )
-        return;
+world.afterEvents.playerInteractWithEntity.subscribe((eventData) => {
+    if (eventData.itemStack.typeId != 'minecraft:amethyst_block') return;
 
-    let player: Player = eventData.source as any;
+    const PLAYER: Player = eventData.player;
+    const ENTITY: Entity = eventData.target;
 
-    let entities: Entity[] = eventData.source.getEntitiesFromViewDirection({
-        maxDistance: 3
-    }) as any;
-
-    let inventory: EntityInventoryComponent = eventData.source.getComponent(
+    let inventory: EntityInventoryComponent = PLAYER.getComponent(
         'minecraft:inventory'
     ) as any;
 
-    entities.forEach((entity) => {
-        if (entity.typeId != 'minecraft:vex') return;
+    if (ENTITY.typeId != 'minecraft:vex') return;
 
-        entity.dimension.spawnEntity('minecraft:allay', entity.location);
-        entity.remove();
+    ENTITY.dimension.spawnEntity('minecraft:allay', ENTITY.location);
+    ENTITY.remove();
 
-        if (eventData.itemStack.amount == 1) {
-            inventory.container.getSlot(player.selectedSlot).amount = 0;
-            return;
-        }
+    if (eventData.itemStack.amount == 1) {
+        PLAYER.runCommand('clear @s minecraft:amethyst_block 0 1');
+        return;
+    }
 
-        inventory.container.setItem(
-            player.selectedSlot,
-            new ItemStack(
-                'minecraft:amethyst_block',
-                eventData.itemStack.amount - 1
-            )
-        );
-    });
+    inventory.container.setItem(
+        PLAYER.selectedSlot,
+        new ItemStack(
+            'minecraft:amethyst_block',
+            eventData.itemStack.amount - 1
+        )
+    );
 });
 
 world.beforeEvents.itemUseOn.subscribe((eventData) => {
